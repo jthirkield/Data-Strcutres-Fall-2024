@@ -173,6 +173,8 @@ Final Project: Research & Presentations
 
 ### Week 12	(11/13)
 
+Intro to Scraping with Playwright
+
 **Final Projects** Student Presentations of Final Projects Data Sets and Concepts
 
 #### Assignment:
@@ -197,7 +199,7 @@ Final Projects: Data Final Architecture & Visualization/Presentation
 
 ### Week 15 (12/4)
 
-**Final Projects** Final Presentation—Sharing Process, Outcomes, Prototypes
+**Final Projects** Final Presentations—Sharing Process, Outcomes, Prototypes
 
 
 
