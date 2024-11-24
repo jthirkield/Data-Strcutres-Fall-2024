@@ -24,7 +24,7 @@ By the successful completion of this course, students gain:
 
 ## COURSE OUTLINE
 
-### Week 1	(8/28)
+### Week 1: Relational Tables (SQL)	(8/28)
 
 **Postgres** Intro SQL Tutorial
 
@@ -32,7 +32,7 @@ By the successful completion of this course, students gain:
 
 #### Assignment:
 
-**Relational Tables** Homework 1.0: PostgreSQL Problem Set and Queries
+Homework 1.0: PostgreSQL Installation, Problem Set and Queries
 
 #### Reading: 
 Jorges Luis Borges, The Library of Babel 
@@ -42,7 +42,7 @@ Michael Castelle, [Relational and Non-Relational Models in the Entextualization 
 #### Canvas Discussion:
 Discussion 1: Information Space
 
-### Week 2	(9/4)
+### Week 2: Relational Tables (SQL)	(9/4)
 
 **Postgres** In Class SQL Session Review Simple and Aggregate Queries
 
@@ -50,7 +50,7 @@ Discussion 1: Information Space
 
 #### Assignment:
 
-**Relational Tables** Homework 2.0: PostgreSQL Problem Set 2
+Homework 2.0: PostgreSQL Problem Set 2
 
 #### Reading: 
 
@@ -60,7 +60,7 @@ Lisa Gitelman and Virginia Jackson, Introduction to "Raw data" is an Oxymoron
 
 Lecture/Discussion: Imagining Data
 
-### Week 3	(9/11)
+### Week 3: JavaScript and NoSQL (9/11)
 
 **JavaScript & JSON** Data Types: Working with JavaScript Objects
 
@@ -82,7 +82,7 @@ Lev Manovich, Database as Symbolic Form
 
 Discussion 3: Database Aesthetics
 
-### Week 4	(9/18)
+### Week 4: JavaScript, Node and MongoDB (NoSQL) (9/18)
 
 **JavaScript & Node:** MongoDB Set-Up and Querying APIs
 
@@ -94,7 +94,7 @@ Homework 3.1: Searching Multiple Texts in an Array of Objects with Loops and Str
 
 Homework 4.0: Node API to MongoDB
 
-### Week 5	(9/25)
+### Week 5: JavaScript and MongoDB (9/25)
 
 **JavaScript and Mongo** MongoDB Tutorial
 
@@ -110,7 +110,7 @@ Ellen Gruber Garvey, “facts and FACTS”: Abolitionists’ Database Innovation
 
 Discussion 4: Building Databases
 
-### Week 6	(10/2)
+### Week 6: Python Intro (10/2)
 
 **Python** Intro and Scraping with Beautiful Soup (plus MongoDB review)
 
@@ -118,7 +118,7 @@ Discussion 4: Building Databases
 
 Homework 6.0: Scraping Part One: Methods and Tables
 
-### Week 7	(10/9)
+### Week 7: Python Scraping (10/9)
 
 **Python Scraping** Python and Scraping Review and Strings and Regex Intro
 
@@ -136,7 +136,7 @@ Giorgia Lupi, Non-linear Storytelling: Journalism through “Info-spatial” Com
 
 Discussion 5: Nonlinear/Visual Storytelling with Data
 
-### Week 8	(10/16)
+### Week 8: Python Strings and Regex (10/16)
 
 **Python Regex** Advanced Regex
 
@@ -146,7 +146,7 @@ Discussion 5: Nonlinear/Visual Storytelling with Data
 
 Homework 8.0: Structuring Tables through Regex/Scraping
 
-### Week 9	(10/23)
+### Week 9: Python Pandas (10/23)
 
 **Python Pandas** Pandas Intro: Data Cleaning, Transformation, and Aggregation
 
@@ -162,7 +162,7 @@ Matthew Stanley, Where Is That Moon, Anyway? The Problem of Interpreting Histori
 
 Discussion 6: Data Gathering
 
-### Week 10	(10/30)
+### Week 10: Python Pandas 2 (10/30)
 
 **Python Pandas** Pandas: Re-structuring Data
 
@@ -170,7 +170,7 @@ Discussion 6: Data Gathering
 
 Homework 10.0: Explore and Evaluate a Dataset in Pandas
 
-### Week 11	(11/6)
+### Week 11: Python and JSON (11/6)
 
 **Python to JavaScript** Pandas to JSON to GeoJSON (and vice versa): Transforming Data for Visualization (for Final Projects)
 
@@ -184,9 +184,9 @@ Homework 11.0: Advanced Regex Transcripts to Tables (Due 11/20)
 
 Final Project: Research & Presentations
 
-### Week 12	(11/13)
+### Week 12: Final Projects	(11/13)
 
-Scraping with **Playwright**
+*Tutorial:* Scraping with **Playwright**
 
 **Final Projects** Student Presentations of Final Projects Data Sets and Concepts
 
@@ -194,7 +194,7 @@ Scraping with **Playwright**
 
 Final Project: Data Structuring & Gathering
 
-### Week 13 (11/20)
+### Week 13: Final Projects (11/20)
 
 Lecture/Discussion: Digital Storytelling—Data, Interface, and Visualization
 
@@ -202,7 +202,7 @@ Lecture/Discussion: Digital Storytelling—Data, Interface, and Visualization
 
 Final Projects: Data Exploration & Aggregation
 
-### Week 14 (11/27)
+### Week 14: Final Projects (11/27)
 
 **Final Projects** Workshop
 
@@ -210,7 +210,7 @@ Final Projects: Data Exploration & Aggregation
 
 Final Projects: Data Final Architecture & Visualization/Presentation
 
-### Week 15 (12/4)
+### Week 15: Final Projects (12/4)
 
 **Final Projects** Final Presentations—Sharing Process, Outcomes, Prototypes
 
