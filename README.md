@@ -27,7 +27,7 @@ By the successful completion of this course, students gain:
 ### Week 1	(8/28)
 
 Lecture/Discussion: Introduction to Data
-In Class SQL session (Intro to PostgreSQL)
+**Postgres** In Class SQL session (Intro to PostgreSQL)
 
 #### Assignment:
 
@@ -44,7 +44,7 @@ Discussion 1: Information Space
 
 Lecture/Discussion: What is Data?
 
-In Class SQL Session Review Simple and Aggregate Queries
+**Postgres** In Class SQL Session Review Simple and Aggregate Queries
 
 #### Assignment:
 
@@ -58,13 +58,12 @@ Lecture/Discussion: Imagining Data
 
 ### Week 3	(9/11)
 
-Data Types: Working with JavaScript Objects
+**JavaSCript & JSON** Data Types: Working with JavaScript Objects
 
 SQL Session: SQL Problem Set 2 & Understanding Joins
 
 #### Assignment:
 
-**JSON Data** 
 Homework 3.0: Self-portrait as an Object (Due 9/18)
 
 Homework 3.1: Searching Multiple Texts in an Array of Objects with Loops and String Operations (first 4 functions due 9/18) 
@@ -77,13 +76,12 @@ Discussion 3: Database Aesthetics
 
 ### Week 4	(9/18)
 
-**JavaScript and Node:** MongoDB Set-Up and Querying APIs
+**JavaScript & Node:** MongoDB Set-Up and Querying APIs
 
 Lecture/Discussion: Taxonomy & Ontology
 
 #### Assignment:
 
-**JSON Data** 
 Homework 3.1: Searching Multiple Texts in an Array of Objects with Loops and String Operations (continued)
 
 Homework 4.0: Node API to MongoDB
@@ -112,7 +110,7 @@ Homework 6.0: Scraping Part One: Methods and Tables
 
 ### Week 7	(10/9)
 
-**Python** Python and Scraping Review and Regex Intro
+**Python Scraping** Python and Scraping Review and Regex Intro
 
 #### Assignment:
 
@@ -128,7 +126,7 @@ Discussion 5: Nonlinear/Visual Storytelling with Data
 
 ### Week 8	(10/16)
 
-**Python** Advanced Regex
+**Python Regex** Advanced Regex
 
 Lecture/Discussion: Database and Narrative
 
@@ -138,7 +136,7 @@ Homework 8.0: Structuring Tables through Regex/Scraping
 
 ### Week 9	(10/23)
 
-**Python** Pandas Intro: Data Cleaning, Transformation, and Aggregation
+**Python Pandas** Pandas Intro: Data Cleaning, Transformation, and Aggregation
 
 #### Assignment:
 Homework 9.0: Pandas Intro
@@ -151,7 +149,7 @@ Discussion 6: Data Gathering
 
 ### Week 10	(10/30)
 
-**Python** Pandas: Re-structuring Data
+**Python Pandas** Pandas: Re-structuring Data
 
 #### Assignment:
 
@@ -159,7 +157,7 @@ Homework 10.0: Explore and Evaluate a Dataset in Pandas
 
 ### Week 11	(11/6)
 
-**Python** Pandas to JSON to GeoJSON (and vice versa): Transforming Data for Visualization (for Final Projects)
+**Python to JavaScript** Pandas to JSON to GeoJSON (and vice versa): Transforming Data for Visualization (for Final Projects)
 
 Transforming and Structuring PDFs with Tika and Regex
 
@@ -173,7 +171,7 @@ Final Project: Research & Presentations
 
 ### Week 12	(11/13)
 
-Intro to Scraping with Playwright
+Scraping with **Playwright**
 
 **Final Projects** Student Presentations of Final Projects Data Sets and Concepts
 
