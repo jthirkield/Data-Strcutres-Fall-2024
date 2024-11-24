@@ -26,15 +26,17 @@ By the successful completion of this course, students gain:
 
 ### Week 1	(8/28)
 
-Lecture/Discussion: Introduction to Data
-**Postgres** In Class SQL session (Intro to PostgreSQL)
+**Postgres** Intro SQL Tutorial
+
+*Lecture/Discussion:* Introduction to Data
 
 #### Assignment:
 
 **Relational Tables** Homework 1.0: PostgreSQL Problem Set and Queries
 
 #### Reading: 
-Jorges Luis Borges, The Library of Babel and 
+Jorges Luis Borges, The Library of Babel 
+ 
 Michael Castelle, [Relational and Non-Relational Models in the Entextualization of Bureaucracy](http://computationalculture.net/relational-and-non-relational-models-in-the-entextualization-of-bureaucracy/)  
 
 #### Canvas Discussion:
@@ -42,25 +44,27 @@ Discussion 1: Information Space
 
 ### Week 2	(9/4)
 
-Lecture/Discussion: What is Data?
-
 **Postgres** In Class SQL Session Review Simple and Aggregate Queries
+
+*Lecture/Discussion:* What is Data?
 
 #### Assignment:
 
 **Relational Tables** Homework 2.0: PostgreSQL Problem Set 2
 
 #### Reading: 
+
 Lisa Gitelman and Virginia Jackson, Introduction to "Raw data" is an Oxymoron
 
 #### Canvas Discussion:
+
 Lecture/Discussion: Imagining Data
 
 ### Week 3	(9/11)
 
-**JavaSCript & JSON** Data Types: Working with JavaScript Objects
+**JavaScript & JSON** Data Types: Working with JavaScript Objects
 
-SQL Session: SQL Problem Set 2 & Understanding Joins
+*SQL Session:* SQL Problem Set 2 & Understanding Joins
 
 #### Assignment:
 
@@ -69,16 +73,20 @@ Homework 3.0: Self-portrait as an Object (Due 9/18)
 Homework 3.1: Searching Multiple Texts in an Array of Objects with Loops and String Operations (first 4 functions due 9/18) 
 
 #### Reading: 
-Christiane Paul, The Database as System and Cultural Form: Anatomies of Cultural Narratives & Lev Manovich, Database as Symbolic Form
+
+Christiane Paul, The Database as System and Cultural Form: Anatomies of Cultural Narratives
+
+Lev Manovich, Database as Symbolic Form
 
 #### Canvas Discussion:
+
 Discussion 3: Database Aesthetics
 
 ### Week 4	(9/18)
 
 **JavaScript & Node:** MongoDB Set-Up and Querying APIs
 
-Lecture/Discussion: Taxonomy & Ontology
+*Lecture/Discussion:* Taxonomy & Ontology
 
 #### Assignment:
 
@@ -94,10 +102,12 @@ Homework 4.0: Node API to MongoDB
 
 Homework 5.0: Code: MongoDB Queries & Python Installations
 
-#### Reading: 
+#### Reading:
+
 Ellen Gruber Garvey, “facts and FACTS”: Abolitionists’ Database Innovations
 
 #### Canvas Discussion:
+
 Discussion 4: Building Databases
 
 ### Week 6	(10/2)
@@ -110,7 +120,7 @@ Homework 6.0: Scraping Part One: Methods and Tables
 
 ### Week 7	(10/9)
 
-**Python Scraping** Python and Scraping Review and Regex Intro
+**Python Scraping** Python and Scraping Review and Strings and Regex Intro
 
 #### Assignment:
 
@@ -118,17 +128,19 @@ Homework 7.0: Scraping Part Two: Multipage Scraping and Structuring Output
 
 Homework 7.1: Regex Intro
 
-#### Reading: 
+#### Reading:
+
 Giorgia Lupi, Non-linear Storytelling: Journalism through “Info-spatial” Compositions
 
 #### Canvas Discussion:
+
 Discussion 5: Nonlinear/Visual Storytelling with Data
 
 ### Week 8	(10/16)
 
 **Python Regex** Advanced Regex
 
-Lecture/Discussion: Database and Narrative
+*Lecture/Discussion:* Database and Narrative
 
 #### Assignment:
 
@@ -139,12 +151,15 @@ Homework 8.0: Structuring Tables through Regex/Scraping
 **Python Pandas** Pandas Intro: Data Cleaning, Transformation, and Aggregation
 
 #### Assignment:
+
 Homework 9.0: Pandas Intro
 
 #### Reading: 
+
 Matthew Stanley, Where Is That Moon, Anyway? The Problem of Interpreting Historical Solar Eclipse Observations
 
 #### Canvas Discussion:
+
 Discussion 6: Data Gathering
 
 ### Week 10	(10/30)
