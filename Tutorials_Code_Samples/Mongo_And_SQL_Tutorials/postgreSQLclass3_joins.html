@@ -1,0 +1,511 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+<head>
+    <title>DATA STRUCTURES: WEEK 3 -- JOINS</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+ .hlite { 
+    background-color: yellow;
+}
+    </style>
+    
+</head>
+<body>
+
+<div id="docContainerWrap">
+<div id="docContainer">
+<div id="docNavSearchContainer">
+
+<div id="docContent">
+
+
+<div class="SECT1">
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> DATA STRUCTURES: WEEK 3 -- JOINS</a></h1>
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> UNDERSTANDING THE DIFFERENT TYPES OF <span class="hlite">JOIN </a></span></h1>
+  
+
+ <P> 
+There are four types of JOINS that matter to us:
+</p> 
+<P>
+<span class="hlite">JOIN</span> also know as INNER JOIN. This combines all common rows to make a brand new table, and tosses any lonely unmatching rows. If there are non-matching rows in either table: those rows disappear.
+</P>
+<img src="https://floatingmedia.com/DataClass/join_img/inner_join.png" width="600" alt="inner_join" />
+<P>
+<span class="hlite">LEFT JOIN</span> also known as LEFT OUTER JOIN. This keeps all of the rows of the first table, the one named in FROM. That "left" table keeps all of its rows, but matching rows from table on the "right" (named in the JOIN field) join the matching rows on the left, adding new columns to the matching rows. If there are non-matching rows: empty columns with NULL values will be added to "left" table's unmatched rows. (Non-matching rows on the "right" side will not be included.)
+</P>
+<img src="https://floatingmedia.com/DataClass/join_img/left_join.png" width="600"  alt="left_join" /><P>
+<span class="hlite">RIGHT JOIN</span> also known as RIGHT OUTER JOIN. This does the opposite of a LEFT JOIN. It keeps all the rows from the "right" table (the table named in the JOIN field), but brings over the matching rows from the "left" table, adding new columns to the matching rows in the "right" table. If there are non-matching rows: empty columns with NULL values will be added to "right" rows. (Non-matching rows on the "left" side will not be included.) Right join are not used very often, because generally it is better practice to name your more populated table first, in the FROM field--so it is much more common to do a left join.
+</P>
+<img src="https://floatingmedia.com/DataClass/join_img/right_join.png" width="600" alt="right_join" />
+<P>
+<span class="hlite">FULL JOIN</span> also known as FULL OUTER JOIN. This one keeps every row from the two original tables, and combines the matching rows. If there are non-matching rows: empty columns with NULL values will be added to both "left" and "right" rows. This keeps all of the information from both rows intact, and will often produce more NULL values.
+</P><img src="https://floatingmedia.com/DataClass/join_img/full_join.png" width="600" alt="full_join" />
+<P>
+Note: the images above are modified versions of the images on the <a href="https://dataschool.com/how-to-teach-people-sql/sql-join-types-explained-visually/" target="_blank">site</a> (I don't know if their explanation will add much to this however.)
+</P>
+<P>
+<b>A practical example</b>, from a small time-series set of UN data (see the bottom of this page for instructions on how to build this in your own postgres database). This is yearly energy data (specifically solar and wind energy) by country. In these queries, I will always refer to the 'solar' table as the LEFT table and the 'wind' table as the RIGHT table.
+</P>
+<P>
+The challenge with this data set is that some countries have more years of data for wind, whereas others have more years of data for solar--this is just a function of what year the UN started tracking that data in their country. The issue you might run into is if we do a default JOIN (INNER JOIN) based on only country we get tons of duplicate rows because there are tons of duplicate countries. But if we do a JOIN based on country and year, we start losing information. This is where these different types of joins come in.
+</P>
+<P>
+The sake of clarity and readability I have chosen to examine two different countries, <B>Serbia</b> and <B>Pakistan</b> because neither of them have very much information in either of the tables (so we can see the tables easily), but Serbia has more years of solar than it does of wind, whereas Pakistan has more years of wind than solar. What we want to figure out is how we would join everything together, without losing any information.
+</P>
+<P>
+<b>CASE ONE: Serbia</b><BR>
+Here are the solar and wind tables individually for Serbia.
+</P>
+<pre class="PROGRAMLISTING">
+undata=# SELECT country, year, usage FROM solar
+WHERE country = 'Serbia' ORDER BY year DESC;
+ country | year | usage  
+---------+------+--------
+ Serbia  | 2019 |     14
+ Serbia  | 2018 |     13
+ Serbia  | 2017 | 13.139
+ Serbia  | 2016 |     12
+ Serbia  | 2015 |     11
+ Serbia  | 2014 |      6
+(6 rows)
+
+
+
+undata=# SELECT country, year, usage FROM wind
+WHERE country = 'Serbia' ORDER BY year DESC;
+country | year | usage  
+---------+------+--------
+ Serbia  | 2019 |    898
+ Serbia  | 2018 |    150
+ Serbia  | 2017 | 48.457
+ Serbia  | 2016 |     26
+(4 rows)
+
+
+</pre>
+<P>
+Serbia has solar data starting in 2014, and wind data starting in 2016. If we do an inner <span class="hlite">JOIN</span> on year and country we will lose all the unmatched in data. Giving us only the two matching rows.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+country | year |   su   | country | year |   wu   
+---------+------+--------+---------+------+--------
+ Serbia  | 2019 |     14 | Serbia  | 2019 |    898
+ Serbia  | 2018 |     13 | Serbia  | 2018 |    150
+ Serbia  | 2017 | 13.139 | Serbia  | 2017 | 48.457
+ Serbia  | 2016 |     12 | Serbia  | 2016 |     26
+(4 rows)
+
+
+
+
+
+</pre>
+<P>
+If we do a <span class="hlite">LEFT JOIN</span>, because we are always choosing solar as our left table in these examples, we will keep all the information from the solar table, and just add on the information from wind.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+LEFT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country | year |   su   | country | year |   wu   
+---------+------+--------+---------+------+--------
+ Serbia  | 2019 |     14 | Serbia  | 2019 |    898
+ Serbia  | 2018 |     13 | Serbia  | 2018 |    150
+ Serbia  | 2017 | 13.139 | Serbia  | 2017 | 48.457
+ Serbia  | 2016 |     12 | Serbia  | 2016 |     26
+ Serbia  | 2015 |     11 |         |      |       
+ Serbia  | 2014 |      6 |         |      |       
+(6 rows)
+
+
+
+
+</pre>
+<P>
+If we do a <span class="hlite">RIGHT JOIN</span>, we will keep all the information from the wind table, but just the matchings rows from solar will be added. (This looks the same as the inner join, because the inner join joined only matches.)
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+RIGHT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country | year |   su   | country | year |   wu   
+---------+------+--------+---------+------+--------
+ Serbia  | 2019 |     14 | Serbia  | 2019 |    898
+ Serbia  | 2018 |     13 | Serbia  | 2018 |    150
+ Serbia  | 2017 | 13.139 | Serbia  | 2017 | 48.457
+ Serbia  | 2016 |     12 | Serbia  | 2016 |     26
+(4 rows)
+
+
+</pre>
+<P>
+If we do a <span class="hlite">FULL JOIN</span>, we will keep all the information from both tables. (This all looks like the left join because in this case the left table has the most complete information).
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+FULL JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country | year |   su   | country | year |   wu   
+---------+------+--------+---------+------+--------
+ Serbia  | 2019 |     14 | Serbia  | 2019 |    898
+ Serbia  | 2018 |     13 | Serbia  | 2018 |    150
+ Serbia  | 2017 | 13.139 | Serbia  | 2017 | 48.457
+ Serbia  | 2016 |     12 | Serbia  | 2016 |     26
+ Serbia  | 2015 |     11 |         |      |       
+ Serbia  | 2014 |      6 |         |      |       
+(6 rows)
+
+
+</pre>
+<P>
+<b>CASE TWO: Pakistan</b><BR>
+Here are the solar and wind tables individually for Pakistan.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT country, year, usage FROM solar
+WHERE country = 'Pakistan' ORDER BY year DESC;
+ country  | year | usage 
+----------+------+-------
+ Pakistan | 2020 |   708
+ Pakistan | 2019 |   716
+ Pakistan | 2018 |   714
+ Pakistan | 2017 |   654
+ Pakistan | 2016 |   207
+(5 rows)
+
+
+undata=# SELECT country, year, usage FROM wind
+WHERE country = 'Pakistan' ORDER BY year DESC;
+ country  | year | usage 
+----------+------+-------
+ Pakistan | 2020 |  2914
+ Pakistan | 2019 |  3234
+ Pakistan | 2018 |  2124
+ Pakistan | 2017 |  1422
+ Pakistan | 2016 |   791
+ Pakistan | 2015 |   461
+ Pakistan | 2014 |   265
+ Pakistan | 2013 |     6
+(8 rows)
+
+
+
+
+</pre>
+
+<P>
+Pakinstan has solar data starting in 2016, and wind data starting in 2013. If we do an inner <span class="hlite">JOIN</span> on year and country we will lose all the unmatched in data. Giving us only the four matching rows.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country  | year | su  | country  | year |  wu  
+----------+------+-----+----------+------+------
+ Pakistan | 2020 | 708 | Pakistan | 2020 | 2914
+ Pakistan | 2019 | 716 | Pakistan | 2019 | 3234
+ Pakistan | 2018 | 714 | Pakistan | 2018 | 2124
+ Pakistan | 2017 | 654 | Pakistan | 2017 | 1422
+ Pakistan | 2016 | 207 | Pakistan | 2016 |  791
+(5 rows)
+
+
+</pre>
+<P>
+If we do a <span class="hlite">LEFT JOIN</span>, because we are always choosing solar as our left table in these examples, we will keep all the information from the solar table, and just add on the information from wind. The result looks exactly like the INNER JOIN because here the smaller left table matches up three of the rows on the right.
+</P>
+<pre class="PROGRAMLISTING">
+undata=# SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+LEFT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country  | year | su  | country  | year |  wu  
+----------+------+-----+----------+------+------
+ Pakistan | 2020 | 708 | Pakistan | 2020 | 2914
+ Pakistan | 2019 | 716 | Pakistan | 2019 | 3234
+ Pakistan | 2018 | 714 | Pakistan | 2018 | 2124
+ Pakistan | 2017 | 654 | Pakistan | 2017 | 1422
+ Pakistan | 2016 | 207 | Pakistan | 2016 |  791
+(5 rows)
+
+
+
+
+</pre>
+<P>
+If we do a <span class="hlite">RIGHT JOIN</span>, we will keep all the information from the wind table, and the matchings rows from solar will be added. (In this case, because the wind table has the most rows, this is the most complete table).
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+RIGHT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country  | year | su  | country  | year |  wu  
+----------+------+-----+----------+------+------
+ Pakistan | 2020 | 708 | Pakistan | 2020 | 2914
+ Pakistan | 2019 | 716 | Pakistan | 2019 | 3234
+ Pakistan | 2018 | 714 | Pakistan | 2018 | 2124
+ Pakistan | 2017 | 654 | Pakistan | 2017 | 1422
+ Pakistan | 2016 | 207 | Pakistan | 2016 |  791
+          |      |     | Pakistan | 2015 |  461
+          |      |     | Pakistan | 2014 |  265
+          |      |     | Pakistan | 2013 |    6
+(8 rows)
+
+
+
+
+</pre>
+<P>
+If we do a <span class="hlite">FULL JOIN</span>, we will keep all the information from both tables. (This looks like the right join because in this case the right table has the most complete information).
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+FULL JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country  | year | su  | country  | year |  wu  
+----------+------+-----+----------+------+------
+ Pakistan | 2020 | 708 | Pakistan | 2020 | 2914
+ Pakistan | 2019 | 716 | Pakistan | 2019 | 3234
+ Pakistan | 2018 | 714 | Pakistan | 2018 | 2124
+ Pakistan | 2017 | 654 | Pakistan | 2017 | 1422
+ Pakistan | 2016 | 207 | Pakistan | 2016 |  791
+          |      |     | Pakistan | 2015 |  461
+          |      |     | Pakistan | 2014 |  265
+          |      |     | Pakistan | 2013 |    6
+(8 rows)
+
+
+
+</pre>
+<P>
+Finally, to show you the true usefulness of a <span class="hlite">FULL JOIN</span>, here is a joined table with both Serbia and Pakistan, one of which has more information on the left and the other of whom has more information on the right. Here the FULL JOIN is keeping all of the rows intact from both tables and only combining rows that match.</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+FULL JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan' OR wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc, wind.year desc;
+ country  | year |   su   | country  | year |   wu   
+----------+------+--------+----------+------+--------
+ Pakistan | 2020 |    708 | Pakistan | 2020 |   2914
+ Pakistan | 2019 |    716 | Pakistan | 2019 |   3234
+ Pakistan | 2018 |    714 | Pakistan | 2018 |   2124
+ Pakistan | 2017 |    654 | Pakistan | 2017 |   1422
+ Pakistan | 2016 |    207 | Pakistan | 2016 |    791
+ Serbia   | 2019 |     14 | Serbia   | 2019 |    898
+ Serbia   | 2018 |     13 | Serbia   | 2018 |    150
+ Serbia   | 2017 | 13.139 | Serbia   | 2017 | 48.457
+ Serbia   | 2016 |     12 | Serbia   | 2016 |     26
+ Serbia   | 2015 |     11 |          |      |       
+ Serbia   | 2014 |      6 |          |      |       
+          |      |        | Pakistan | 2015 |    461
+          |      |        | Pakistan | 2014 |    265
+          |      |        | Pakistan | 2013 |      6
+(14 rows)
+
+
+</pre>
+<P>
+Here is an inner <span class="hlite">JOIN</span> with both countries. No NULLS just rows with matchs.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan' OR wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+country  | year |   su   | country  | year |   wu   
+----------+------+--------+----------+------+--------
+ Pakistan | 2020 |    708 | Pakistan | 2020 |   2914
+ Pakistan | 2019 |    716 | Pakistan | 2019 |   3234
+ Pakistan | 2018 |    714 | Pakistan | 2018 |   2124
+ Pakistan | 2017 |    654 | Pakistan | 2017 |   1422
+ Pakistan | 2016 |    207 | Pakistan | 2016 |    791
+ Serbia   | 2019 |     14 | Serbia   | 2019 |    898
+ Serbia   | 2018 |     13 | Serbia   | 2018 |    150
+ Serbia   | 2017 | 13.139 | Serbia   | 2017 | 48.457
+ Serbia   | 2016 |     12 | Serbia   | 2016 |     26
+(9 rows)
+
+
+</pre>
+<P>
+Here is a <span class="hlite">LEFT JOIN</span> with both countries. We lose information for Pakistan.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+LEFT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan' OR wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+country  | year |   su   | country  | year |   wu   
+----------+------+--------+----------+------+--------
+ Pakistan | 2020 |    708 | Pakistan | 2020 |   2914
+ Pakistan | 2019 |    716 | Pakistan | 2019 |   3234
+ Pakistan | 2018 |    714 | Pakistan | 2018 |   2124
+ Pakistan | 2017 |    654 | Pakistan | 2017 |   1422
+ Pakistan | 2016 |    207 | Pakistan | 2016 |    791
+ Serbia   | 2019 |     14 | Serbia   | 2019 |    898
+ Serbia   | 2018 |     13 | Serbia   | 2018 |    150
+ Serbia   | 2017 | 13.139 | Serbia   | 2017 | 48.457
+ Serbia   | 2016 |     12 | Serbia   | 2016 |     26
+ Serbia   | 2015 |     11 |          |      |       
+ Serbia   | 2014 |      6 |          |      |       
+(11 rows)
+
+
+
+</pre>
+<P>
+Here is a <span class="hlite">RIGHT JOIN</span> with both countries. We lose information for Serbia.
+</P>
+<pre class="PROGRAMLISTING">
+SELECT solar.country, solar.year, solar.usage AS su, wind.country, wind.year, wind.usage AS wu 
+FROM solar 
+RIGHT JOIN wind ON wind.country = solar.country
+AND wind.year = solar.year
+WHERE wind.country = 'Pakistan' OR solar.country = 'Pakistan' OR wind.country = 'Serbia' OR solar.country = 'Serbia'
+ORDER BY solar.country, wind.country, solar.year desc;
+ country  | year |   su   | country  | year |   wu   
+----------+------+--------+----------+------+--------
+ Pakistan | 2020 |    708 | Pakistan | 2020 |   2914
+ Pakistan | 2019 |    716 | Pakistan | 2019 |   3234
+ Pakistan | 2018 |    714 | Pakistan | 2018 |   2124
+ Pakistan | 2017 |    654 | Pakistan | 2017 |   1422
+ Pakistan | 2016 |    207 | Pakistan | 2016 |    791
+ Serbia   | 2019 |     14 | Serbia   | 2019 |    898
+ Serbia   | 2018 |     13 | Serbia   | 2018 |    150
+ Serbia   | 2017 | 13.139 | Serbia   | 2017 | 48.457
+ Serbia   | 2016 |     12 | Serbia   | 2016 |     26
+          |      |        | Pakistan | 2013 |      6
+          |      |        | Pakistan | 2014 |    265
+          |      |        | Pakistan | 2015 |    461
+(12 rows)
+
+
+</pre>
+<P>
+(There is a cross join as well that combines every possible combination of rows together, and that is for much more advanced work.)</p>
+
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> BONUS INFO: <span class="hlite">CONVERTING CSV files to SQL </a></span></h1>
+
+ <p>We will download two CSV files from <a href="http://data.un.org/Explorer.aspx" target=_blank>http://data.un.org/Explorer.aspx</a></p>
+
+<p>In the Energy Statistics Database download Solar Electricity and Wind Electricity by clicking on <span class="hlite">"View Data"</span> and then on that page click <span class="hlite">"download"</span>, and under <span class="hlite">"value separated"</span> choose <span class="hlite">"comma"</span>.</p>
+
+<p>But first, we need to create a new database in Postgres:</p>
+<pre class="PROGRAMLISTING">create database undata;</pre>
+
+<p>Then we can add some tables, one for solar and one for wind.</p>
+
+<p><b>Here is the process for "solar" (please follow the same process for "wind")</b></p>
+
+<p>The file you download will be called something like: <span class="hlite">UNdata_Export_20240911_155047688.zip</span></p>
+
+<p>Unzip the file, and rename it something readable, like <span class="hlite">"UN_solar.csv"</span></p>
+
+<p>Put that file in a folder on your computer (not in a remote/cloud drive, but in the computer itself). Make sure there are no spaces in the name of the folders it is in.</p>
+
+<p>Maybe open the file in Excel in order to read the column names and see what kind of data is in each column. (<span class="hlite">Make sure you never save the file while in Excel</span>--even if you made no changes, Excel may still add invisible and additional characters that will make the file unreadable in the terminal.)</p>
+
+<p>Based on the columns write a <span class="hlite">CREATE TABLE</span> statement that contains columns and datatypes for each column. For example:</p>
+
+<pre class="PROGRAMLISTING">CREATE TABLE solar (
+  country varchar(80),
+  type varchar(80),
+  year int,
+  unit varchar(80),
+  usage double precision,
+  notes varchar(80)
+);</pre>
+
+<p>Once you successfully created the table in PostgreSQL, you need to <b>prep this CSV</b> for processing.</p>
+
+<p>Again, make sure that you have not saved the document in Excel. Open the document in a <span class="hlite">text editor that does not add invisible characters</span>. These include visual studio, sublimetext, bbedit, atom and others -- don't use the text editor that is preinstalled on your computer. Make sure it is made for development/programming.</p>
+
+<p>Once you have found the proper text editor, open up the CSV file and <span class="hlite">delete the header,</span>  then scroll down to the bottom <span class="hlite">and delete any footers</span> (lines that come after the rows). So your entire document should consistently look like this:</p>
+
+<pre class="PROGRAMLISTING">"Afghanistan","Electricity - total solar production","2022","Kilowatt-hours, million","64","1"
+"Afghanistan","Electricity - total solar production","2021","Kilowatt-hours, million","64","1"
+"Afghanistan","Electricity - total solar production","2020","Kilowatt-hours, million","65.93",""
+"Afghanistan","Electricity - total solar production","2019","Kilowatt-hours, million","54.77",""
+"Afghanistan","Electricity - total solar production","2018","Kilowatt-hours, million","35",""
+"Albania","Electricity - total solar production","2022","Kilowatt-hours, million","43.3",""
+"Albania","Electricity - total solar production","2021","Kilowatt-hours, million","40.756",""
+"Albania","Electricity - total solar production","2020","Kilowatt-hours, million","32.26",""
+"Albania","Electricity - total solar production","2019","Kilowatt-hours, million","22.196",""
+"Algeria","Electricity - total solar production","2021","Kilowatt-hours, million","642","1"
+"Algeria","Electricity - total solar production","2020","Kilowatt-hours, million","664.4","1"
+"Algeria","Electricity - total solar production","2019","Kilowatt-hours, million","678.1",""
+
+...
+...
+"Zambia","Electricity - total solar production","2022","Kilowatt-hours, million","143.108",""
+"Zambia","Electricity - total solar production","2021","Kilowatt-hours, million","147.661",""
+"Zambia","Electricity - total solar production","2020","Kilowatt-hours, million","150.156",""
+"Zambia","Electricity - total solar production","2019","Kilowatt-hours, million","117.51",""
+"Zambia","Electricity - total solar production","2018","Kilowatt-hours, million","1.32",""
+"Zambia","Electricity - total solar production","2017","Kilowatt-hours, million","0.163",""
+"Zambia","Electricity - total solar production","2016","Kilowatt-hours, million","0.163",""
+"Zimbabwe","Electricity - total solar production","2021","Kilowatt-hours, million","18.131",""
+"Zimbabwe","Electricity - total solar production","2020","Kilowatt-hours, million","24.4",""
+</pre>
+
+<p>
+Make sure there are no empty lines at the end or at the beginning. Once that is prepped, save the file and close it.</p>
+
+<p>Now you can run the copy command:</p>
+
+<pre class="PROGRAMLISTING">\copy [tablename] from [pathname] delimiter ',' csv</pre>
+
+<p>or, more specifically:</p>
+
+<pre class="PROGRAMLISTING">\copy solar from /Users/YourName/directories/undata-class/testing.csv delimiter ',' csv</pre>
+
+<p>Make sure that the full path you use has <span class="hlite">no spaces in it</span>, and that it ends with .csv</p>
+
+<p>If this worked you will get a message like this 
+<pre class="PROGRAMLISTING">COPY 2786</pre>
+In which 2786 is the number of rows that were copied into the table!
+</p>
+
+  
+  </div>
+
+
+</div>
+</div>
+</body>
+</html>

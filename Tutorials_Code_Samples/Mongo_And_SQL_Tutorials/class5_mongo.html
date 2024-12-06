@@ -1,0 +1,1710 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+<head>
+    <title>DATA STRUCTURES: WEEK 5</title>
+    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="highlight/styles/atom-one-dark-reasonable.css">
+<script src="highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+    <style>
+ .hlite { 
+    background-color: yellow;
+}
+    </style>
+    
+</head>
+<body>
+
+<div id="docContainerWrap">
+<div id="docContainer">
+<div id="docNavSearchContainer">
+
+<div id="docContent">
+
+
+<div class="SECT1">
+  <h2 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> DATA STRUCTURES: WEEK 5</a></h1>
+  <h2 class="SECT1"><a name="DML-INSERT" id="DML-INSERT">  Here's my summary of yesterday's MongoDB intro. </a></h1>
+  
+
+ <P> 
+<BR><BR>
+<h2>FIND AND UPDATE</h2>
+</P>
+<P> 
+<span class="hightlight">findOne()</span> returns a single document, a good way to assess what were working with document by document
+</P>
+<pre><code>
+db.books.findOne()
+
+</code></pre>
+<pre><code style="background-color:#444;">
+{
+  _id: ObjectId('66ea0659410aa4b42f528121'),
+  id: 2701,
+  title: 'Moby Dick; Or, The Whale',
+  authors: [ { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 } ],
+  translators: [],
+  subjects: [
+    'Adventure stories',
+    'Ahab, Captain (Fictitious character) -- Fiction',
+    'Mentally ill -- Fiction',
+    'Psychological fiction',
+    'Sea stories',
+    'Ship captains -- Fiction',
+    'Whales -- Fiction',
+    'Whaling -- Fiction',
+    'Whaling ships -- Fiction'
+  ],
+  bookshelves: [
+    'Best Books Ever Listings',
+    'Browsing: Fiction',
+    'Browsing: Literature'
+  ],
+  languages: [ 'en' ],
+  copyright: false,
+  media_type: 'Text',
+  formats: {
+    'text/html': 'https://www.gutenberg.org/ebooks/2701.html.images',
+    'text/html; charset=utf-8': 'https://www.gutenberg.org/files/2701/2701-h/2701-h.htm',
+    'application/epub+zip': 'https://www.gutenberg.org/ebooks/2701.epub3.images',
+    'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/2701.kf8.images',
+    'text/plain; charset=utf-8': 'https://www.gutenberg.org/files/2701/2701-0.txt',
+    'application/rdf+xml': 'https://www.gutenberg.org/ebooks/2701.rdf',
+    'image/jpeg': 'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg',
+    'application/octet-stream': 'https://www.gutenberg.org/cache/epub/2701/pg2701-h.zip',
+    'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/2701.txt.utf-8'
+  },
+  download_count: 72591,
+  genres: [ 'fiction' ]
+}
+
+</code></pre>
+<p><span class="hightlight">find()</span> takes an object where we can set search parameters, here we are searching for the title field.
+
+For a full list query operators, go to <a href="https://www.mongodb.com/docs/manual/reference/operator/query/" target=_blank>https://www.mongodb.com/docs/manual/reference/operator/query/</a>
+
+</p>
+<pre><code>
+db.books.find({title:'Jacob\'s Room'})
+</code></pre>
+<pre><code style="background-color:#444;">
+
+
+[
+  {
+    _id: ObjectId('66ea0a09410aa4b42f5288b6'),
+    id: 5670,
+    title: "Jacob's Room",
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ],
+    translators: [],
+    subjects: [
+      'England -- Fiction',
+      'Experimental fiction',
+      'Psychological fiction',
+      'World War, 1914-1918 -- England -- Fiction',
+      'Young men -- Fiction'
+    ],
+    bookshelves: [
+      'Browsing: Fiction',
+      'Browsing: History - British',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/5670.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/5670.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/5670.kf8.images',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/5670.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/5670/pg5670.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/5670/pg5670-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/5670.txt.utf-8'
+    },
+    download_count: 366,
+    genres: [ 'fiction' ]
+  }
+]
+}
+
+
+</code></pre>
+
+ <p> when we search <span class="hightlight">nested properties</span> , the properties need to be in quotation marks like<span class="hightlight">"authors.name"</span></p>
+<pre><code>
+db.books.find({"authors.name":'Melville, Herman'})
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: ObjectId('66ea0659410aa4b42f528121'),
+    id: 2701,
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    translators: [],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ],
+    bookshelves: [
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/2701.html.images',
+      'text/html; charset=utf-8': 'https://www.gutenberg.org/files/2701/2701-h/2701-h.htm',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/2701.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/2701.kf8.images',
+      'text/plain; charset=utf-8': 'https://www.gutenberg.org/files/2701/2701-0.txt',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/2701.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/2701/pg2701-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/2701.txt.utf-8'
+    },
+    download_count: 72591,
+    genres: [ 'fiction' ]
+  },
+  {
+    _id: ObjectId('66ea06c5410aa4b42f528226'),
+    id: 15,
+    title: 'Moby-Dick; or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    translators: [],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ],
+    bookshelves: [
+      'Adventure',
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/15.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/15.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/15.kf8.images',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/15.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/15/pg15.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/15/pg15-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/15.txt.utf-8'
+    },
+    download_count: 1741,
+    genres: [ 'fiction' ]
+  }
+]
+
+
+
+</code></pre>
+
+ 
+<p><span class="hightlight">find()</span> takes a second object parameter for <span class="hightlight"> projections</span>. Here I am using an exclusive projection: <span class="hightlight">0</span> means to disclude the selected properties.</p>
+
+<pre><code>
+db.books.find(
+    {"authors.name":'Melville, Herman'},
+    {formats:0,_id:0}
+)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    id: 2701,
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    translators: [],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ],
+    bookshelves: [
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    download_count: 72591,
+    genres: [ 'fiction' ]
+  },
+  {
+    id: 15,
+    title: 'Moby-Dick; or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    translators: [],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ],
+    bookshelves: [
+      'Adventure',
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    download_count: 1741,
+    genres: [ 'fiction' ]
+  }
+]
+
+
+</code></pre>
+<P> 
+<p>Here I am using an inclusive projection: <span class="hightlight">1</span> means to include the selected properties. The <span class="hightlight">_id</span> Field is the only field that we can exclude in an inclusive projection (and vice versa for an exclusive one).</p>
+</P><pre><code>
+db.books.find(
+    {"authors.name":'Melville, Herman'},
+    {authors:1,title:1,_id:0}
+)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Moby-Dick; or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Bartleby, the Scrivener: A Story of Wall-Street',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Typee',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'The Piazza Tales',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'The Confidence-Man: His Masquerade',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Moby Dick',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Typee: A Romance of the South Seas',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'White Jacket; Or, The World on a Man-of-War',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Redburn. His First Voyage: Being the Sailor Boy Confessions and Reminiscences of the Son-Of-A-Gentleman in the Merchant Navy',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Omoo: Adventures in the South Seas',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Pierre; or The Ambiguities',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'I and My Chimney',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Omoo: Adventures in the South Seas',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  },
+  {
+    title: 'Israel Potter: His Fifty Years of Exile',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ]
+  }
+]
+
+</code></pre>
+<P> 
+<span class="hightlight">countDocuments()</span> works like find() but returns a number. (No need for projections here!)
+</P><pre><code>
+db.books.countDocuments(
+    {"authors.name":'Melville, Herman'},
+)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+16
+
+</code></pre>
+<P> 
+<span class="hightlight">$regex:</span> wild card can be used in the search object. Or it can be shortened to standard regex syntax with <span class="hightlight">/regexstring/</span>
+</P><pre><code>
+
+db.books.find(
+    {"authors.name": {$regex:'Woolf',$options:"i"}},
+    {authors:1,title:1,_id:0}
+)
+
+db.books.find(
+    {"authors.name": /Woolf/i},
+    {authors:1,title:1,_id:0}
+)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    title: 'Mrs. Dalloway',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: 'The Voyage Out',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: 'The Common Reader',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: 'Night and Day',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: 'Monday or Tuesday',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: 'Night and Day',
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  },
+  {
+    title: "Jacob's Room",
+    authors: [ { name: 'Woolf, Virginia', birth_year: 1882, death_year: 1941 } ]
+  }
+]
+
+
+</code></pre>
+<P> 
+<span class="hightlight">.sort()</span> can be chained to a find() <span class="hightlight">-1 = descending</span> and <span class="hightlight">1 = ascending</span>. This query finds the most downloaded titles.
+</P><pre><code>
+db.books.find(
+    {
+        copyright: true
+    },
+    {authors:1,title:1,download_count:1,_id:0}
+).sort({download_count: -1})
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    title: 'Metamorphosis',
+    authors: [ { name: 'Kafka, Franz', birth_year: 1883, death_year: 1924 } ],
+    download_count: 21674
+  },
+  {
+    title: 'The Trial',
+    authors: [ { name: 'Kafka, Franz', birth_year: 1883, death_year: 1924 } ],
+    download_count: 3758
+  },
+  {
+    title: 'The Online World',
+    authors: [ { name: 'De Presno, Odd', birth_year: 1944, death_year: null } ],
+    download_count: 2797
+  },
+  {
+    title: 'Twenty Thousand Leagues Under the Seas: An Underwater Tour of the World',
+    authors: [ { name: 'Verne, Jules', birth_year: 1828, death_year: 1905 } ],
+    download_count: 1663
+  },
+  {
+    title: "The Gutenberg Webster's Unabridged Dictionary: Section T, U, V, and W",
+    authors: [
+      { name: 'Project Gutenberg', birth_year: null, death_year: null },
+      { name: 'Webster, Noah', birth_year: 1758, death_year: 1843 }
+    ],
+    download_count: 1139
+  }]
+</code></pre>
+<P> 
+<span class="hightlight">.limit()</span> can be chained to a find() as well.
+</P><pre><code>
+
+db.books.find(
+    {
+        copyright: true
+    },
+    {authors:1,title:1,download_count:1,_id:0}
+).sort({download_count: -1}).limit(3)
+
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    title: 'Metamorphosis',
+    authors: [ { name: 'Kafka, Franz', birth_year: 1883, death_year: 1924 } ],
+    download_count: 21674
+  },
+  {
+    title: 'The Trial',
+    authors: [ { name: 'Kafka, Franz', birth_year: 1883, death_year: 1924 } ],
+    download_count: 3758
+  },
+  {
+    title: 'The Online World',
+    authors: [ { name: 'De Presno, Odd', birth_year: 1944, death_year: null } ],
+    download_count: 2797
+  }
+
+
+
+</code></pre>
+<P> 
+<span class="hightlight">$gte:</span> and <span class="hightlight">$lte:</span> flags for greater-than-equal-to and less-than-equal-to. 
+<BR><BR>
+Here is their list of comparison operators : <a href="https://www.mongodb.com/docs/manual/reference/operator/query-comparison/" target=_blank>https://www.mongodb.com/docs/manual/reference/operator/query-comparison/</a>
+</P><pre><code>
+db.books.find(
+    {
+        "authors.birth_year": {$gte:1900, $lte:1920}
+    }
+).sort({download_count: -1}).limit(5)
+
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    _id: ObjectId('66ea0688410aa4b42f52818d'),
+    id: 1250,
+    title: 'Anthem',
+    authors: [ { name: 'Rand, Ayn', birth_year: 1905, death_year: 1982 } ],
+    translators: [],
+    subjects: [
+      'Individuality -- Fiction',
+      'Love stories',
+      'Men -- Psychology -- Fiction',
+      'Psychological fiction',
+      'Science fiction',
+      'Time travel -- Fiction'
+    ],
+    bookshelves: [
+      'Browsing: Fiction',
+      'Browsing: Literature',
+      'Browsing: Science-Fiction & Fantasy',
+      'Science Fiction',
+      'Science Fiction by Women'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/1250.html.images',
+      'text/html; charset=us-ascii': 'https://www.gutenberg.org/files/1250/1250-h/1250-h.htm',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/1250.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/1250.kf8.images',
+      'text/plain; charset=utf-8': 'https://www.gutenberg.org/files/1250/1250-0.txt',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/1250.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/1250/pg1250.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/1250/pg1250-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/1250.txt.utf-8'
+    },
+    download_count: 3568,
+    genres: [ 'fiction' ]
+  },
+  {
+    _id: ObjectId('66ea06af410aa4b42f5281f9'),
+    id: 3,
+    title: "John F. Kennedy's Inaugural Address",
+    authors: [
+      {
+        name: 'Kennedy, John F. (John Fitzgerald)',
+        birth_year: 1917,
+        death_year: 1963
+      }
+    ],
+    translators: [],
+    subjects: [
+      'Presidents -- United States -- Inaugural addresses',
+      'United States -- Foreign relations -- 1961-1963'
+    ],
+    bookshelves: [ 'Browsing: History - American', 'Browsing: Politics' ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/3.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/3.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/3.kf8.images',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/3.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/3/pg3.cover.medium.jpg',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/3.txt.utf-8',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/3/pg3-h.zip'
+    },
+    download_count: 2067
+  },
+  {
+    _id: ObjectId('66ea06ba410aa4b42f528207'),
+    id: 74198,
+    title: 'The man who found out',
+    authors: [
+      { name: 'Aycock, Roger D.', birth_year: 1914, death_year: 2004 }
+    ],
+    translators: [],
+    subjects: [
+      'Caribbean Sea -- Fiction',
+      'Journalists -- Fiction',
+      'Science fiction',
+      'Scientists -- Fiction',
+      'Short stories',
+      'Underwater exploration -- Fiction'
+    ],
+    bookshelves: [],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/74198.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/74198.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/74198.kf8.images',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/74198.txt.utf-8',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/74198.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/74198/pg74198.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/74198/pg74198-h.zip'
+    },
+    download_count: 1989,
+    genres: [ 'fiction' ]
+  },
+  {
+    _id: ObjectId('66ea06ba410aa4b42f52820b'),
+    id: 74221,
+    title: 'The scientific pioneer',
+    authors: [ { name: 'Bond, Nelson S.', birth_year: 1908, death_year: 2006 } ],
+    translators: [],
+    subjects: [ 'Science fiction', 'Short stories' ],
+    bookshelves: [],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/74221.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/74221.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/74221.kf8.images',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/74221.txt.utf-8',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/74221.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/74221/pg74221.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/74221/pg74221-h.zip'
+    },
+    download_count: 1923,
+    genres: [ 'fiction' ]
+  },
+  {
+    _id: ObjectId('66ea06ba410aa4b42f52821c'),
+    id: 74174,
+    title: 'Mr. Biggs goes to town',
+    authors: [ { name: 'Bond, Nelson S.', birth_year: 1908, death_year: 2006 } ],
+    translators: [],
+    subjects: [
+      'Asteroids -- Fiction',
+      'Science fiction',
+      'Space ships -- Fiction'
+    ],
+    bookshelves: [],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/74174.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/74174.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/74174.kf8.images',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/74174.txt.utf-8',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/74174.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/74174/pg74174.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/74174/pg74174-h.zip'
+    },
+    download_count: 1822,
+    genres: [ 'fiction' ]
+  }
+]
+
+
+
+
+</code></pre>
+<P> 
+Here we are looking for different ways to find fiction in order to make a new genres property.
+</P><pre><code>
+db.books.find(
+    {
+        subjects: /fiction/i
+    },
+    {
+        authors: 1, title: 1, subjects: 1, _id: 0
+    }
+).limit(3)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ]
+  },
+  {
+    title: 'Pride and Prejudice',
+    authors: [ { name: 'Austen, Jane', birth_year: 1775, death_year: 1817 } ],
+    subjects: [
+      'Courtship -- Fiction',
+      'Domestic fiction',
+      'England -- Fiction',
+      'Love stories',
+      'Sisters -- Fiction',
+      'Social classes -- Fiction',
+      'Young women -- Fiction'
+    ]
+  },
+  {
+    title: 'Middlemarch',
+    authors: [ { name: 'Eliot, George', birth_year: 1819, death_year: 1880 } ],
+    subjects: [
+      'Bildungsromans',
+      'City and town life -- Fiction',
+      'Didactic fiction',
+      'Domestic fiction',
+      'England -- Fiction',
+      'Love stories',
+      'Married people -- Fiction',
+      'Young women -- Fiction'
+    ]
+  }
+]
+
+
+</code></pre>
+<P> 
+<span class="hightlight">$or:</span> flag so we can search both the subjects and the bookshelves properties.<BR><BR>
+Documentation on logical operators: <a href="https://www.mongodb.com/docs/manual/reference/operator/query-logical/" target=_blank>
+https://www.mongodb.com/docs/manual/reference/operator/query-logical/</a>
+</P><pre><code>
+db.books.find(
+    {
+	$or: [
+            {subjects: /fiction/i},
+            {bookshelves: /fiction/i}
+        ]
+     },
+    {
+        authors: 1, title: 1, subjects: 1, _id: 0
+    }
+).limit(3)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    subjects: [
+      'Adventure stories',
+      'Ahab, Captain (Fictitious character) -- Fiction',
+      'Mentally ill -- Fiction',
+      'Psychological fiction',
+      'Sea stories',
+      'Ship captains -- Fiction',
+      'Whales -- Fiction',
+      'Whaling -- Fiction',
+      'Whaling ships -- Fiction'
+    ]
+  },
+  {
+    title: 'Pride and Prejudice',
+    authors: [ { name: 'Austen, Jane', birth_year: 1775, death_year: 1817 } ],
+    subjects: [
+      'Courtship -- Fiction',
+      'Domestic fiction',
+      'England -- Fiction',
+      'Love stories',
+      'Sisters -- Fiction',
+      'Social classes -- Fiction',
+      'Young women -- Fiction'
+    ]
+  },
+  {
+    title: 'Middlemarch',
+    authors: [ { name: 'Eliot, George', birth_year: 1819, death_year: 1880 } ],
+    subjects: [
+      'Bildungsromans',
+      'City and town life -- Fiction',
+      'Didactic fiction',
+      'Domestic fiction',
+      'England -- Fiction',
+      'Love stories',
+      'Married people -- Fiction',
+      'Young women -- Fiction'
+    ]
+  }
+]
+
+
+
+</code></pre>
+<P> 
+Next I used <span class="hightlight">$and:</span> with an nested <span class="hightlight">$nin:</span> (not in) flag. NOTE: <span class="hightlight">$nin:</span> and <span class="hightlight">$in:</span> need to be in <span class="hightlight">array format</form>, which means that they can search for multiple options.
+</P><pre><code>
+db.books.find(
+    {
+    $and: [
+            {subjects: {$nin: [/fiction/i]}},
+            {bookshelves: /fiction/i}
+        ]
+     },
+    {
+        authors: 1, title: 1, subjects: 1, bookshelves:1,_id: 0
+    }
+).limit(3)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    title: "A Doll's House : a play",
+    authors: [ { name: 'Ibsen, Henrik', birth_year: 1828, death_year: 1906 } ],
+    subjects: [
+      'Man-woman relationships -- Drama',
+      'Marriage -- Drama',
+      'Norwegian drama -- Translations into English',
+      'Wives -- Drama'
+    ],
+    bookshelves: [
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ]
+  },
+  {
+    title: 'The Importance of Being Earnest: A Trivial Comedy for Serious People',
+    authors: [ { name: 'Wilde, Oscar', birth_year: 1854, death_year: 1900 } ],
+    subjects: [
+      'Comedies',
+      'England -- Drama',
+      'Foundlings -- Drama',
+      'Identity (Psychology) -- Drama'
+    ],
+    bookshelves: [
+      'Browsing: Fiction',
+      'Browsing: Literature',
+      'Browsing: Performing Arts/Film',
+      'Plays'
+    ]
+  },
+  {
+    title: 'Plays',
+    authors: [ { name: 'Glaspell, Susan', birth_year: 1876, death_year: 1948 } ],
+    subjects: [ 'American drama' ],
+    bookshelves: [
+      'Browsing: Fiction',
+      'Browsing: Literature',
+      'Browsing: Performing Arts/Film',
+      'One Act Plays'
+    ]
+  }
+]
+
+
+
+</code></pre>
+<P> 
+<span class="hightlight">updateMany()</span> allows us to find certain documents, and make changes.<BR> <BR>
+
+This is part of the <span class="hightlight">UPDATE</span> operators. For full documentation on this and the options:
+<BR><BR>
+<a href="https://www.mongodb.com/docs/manual/reference/operator/update/" target=_blank>https://www.mongodb.com/docs/manual/reference/operator/update/</a>
+
+</P>
+
+<P> 
+I used the <span class="hightlight">$push</span> command to either add a new ARRAY property and add an element to it, or to add an element to an existing property. 
+
+<BR><BR>
+I first added "fiction" to the new <span class="hightlight">genres</span> properties
+<BR> <BR>
+
+
+</P><pre><code>
+db.books.updateMany(
+    {
+        $or: [
+            {subjects: /fiction/i},
+            {bookshelves: /fiction/i}
+        ]
+    },
+    {$push: {genres: "fiction"}}
+)
+</code></pre>
+<P> 
+Then I added "drama" to the genres properties
+
+</P><pre><code>
+db.books.updateMany(
+    {
+        $or: [
+            {subjects: /drama/i},
+            {bookshelves: /drama/i}
+        ]
+    },
+    {$push: {genres: "drama"}}
+)
+
+</code></pre>
+<P> 
+I then searched for the new properties. First looking for titles with both "fiction" and "drama" by looking for array with two elements using <span class="hightlight">$size</span>.
+
+</P><pre><code>
+db.books.find({"genres": {$size: 2}}).limit(2)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: ObjectId('66ea0659410aa4b42f528133'),
+    id: 2542,
+    title: "A Doll's House : a play",
+    authors: [ { name: 'Ibsen, Henrik', birth_year: 1828, death_year: 1906 } ],
+    translators: [],
+    subjects: [
+      'Man-woman relationships -- Drama',
+      'Marriage -- Drama',
+      'Norwegian drama -- Translations into English',
+      'Wives -- Drama'
+    ],
+    bookshelves: [
+      'Best Books Ever Listings',
+      'Browsing: Fiction',
+      'Browsing: Literature'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/2542.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/2542.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/2542.kf8.images',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/2542.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/2542/pg2542.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/files/2542/2542-0.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/2542.txt.utf-8'
+    },
+    download_count: 17928,
+    genres: [ 'fiction', 'drama' ]
+  },
+  {
+    _id: ObjectId('66ea0659410aa4b42f52813b'),
+    id: 844,
+    title: 'The Importance of Being Earnest: A Trivial Comedy for Serious People',
+    authors: [ { name: 'Wilde, Oscar', birth_year: 1854, death_year: 1900 } ],
+    translators: [],
+    subjects: [
+      'Comedies',
+      'England -- Drama',
+      'Foundlings -- Drama',
+      'Identity (Psychology) -- Drama'
+    ],
+    bookshelves: [
+      'Browsing: Fiction',
+      'Browsing: Literature',
+      'Browsing: Performing Arts/Film',
+      'Plays'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/844.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/844.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/844.kf8.images',
+      'text/plain; charset=utf-8': 'https://www.gutenberg.org/files/844/844-0.txt',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/844.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/844/pg844.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/844/pg844-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/844.txt.utf-8'
+    },
+    download_count: 14253,
+    genres: [ 'fiction', 'drama' ]
+  }
+]
+
+
+</code></pre>
+<P> 
+Then I looked for genres that only had drama added to them by specifying the index number <span class="hightlight">"genres.0"</span>. This returns only documents that contain "drama" as the first element of the array.
+</P><pre><code>
+db.books.find({"genres.0": "drama"}).limit(2)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: ObjectId('66ea0688410aa4b42f528184'),
+    id: 51356,
+    title: 'The Birth of Tragedy; or, Hellenism and Pessimism',
+    authors: [
+      {
+        name: 'Nietzsche, Friedrich Wilhelm',
+        birth_year: 1844,
+        death_year: 1900
+      }
+    ],
+    translators: [
+      {
+        name: 'Haussmann, William A.',
+        birth_year: null,
+        death_year: null
+      }
+    ],
+    subjects: [
+      'Aesthetics',
+      'Greek drama (Tragedy) -- History and criticism -- Theory, etc.',
+      'Music -- Philosophy and aesthetics',
+      'Mythology, Greek, in literature',
+      'Tragedy',
+      'Tragic, The'
+    ],
+    bookshelves: [
+      'Browsing: History - General',
+      'Browsing: Literature',
+      'Browsing: Philosophy & Ethics'
+    ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/51356.txt.utf-8',
+      'text/html': 'https://www.gutenberg.org/ebooks/51356.html.images',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/51356.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/51356.kf8.images',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/51356.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/51356/pg51356.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/51356/pg51356-h.zip'
+    },
+    download_count: 3732,
+    genres: [ 'drama' ]
+  },
+  {
+    _id: ObjectId('66ea0697410aa4b42f5281b6'),
+    id: 994,
+    title: 'Riders to the Sea',
+    authors: [
+      {
+        name: 'Synge, J. M. (John Millington)',
+        birth_year: 1871,
+        death_year: 1909
+      }
+    ],
+    translators: [],
+    subjects: [
+      'Drowning victims -- Drama',
+      'Ireland -- Drama',
+      'Mothers and sons -- Drama',
+      'Seafaring life -- Drama'
+    ],
+    bookshelves: [ 'Browsing: Literature', 'One Act Plays', 'Opera' ],
+    languages: [ 'en' ],
+    copyright: false,
+    media_type: 'Text',
+    formats: {
+      'text/html': 'https://www.gutenberg.org/ebooks/994.html.images',
+      'text/html; charset=utf-8': 'https://www.gutenberg.org/files/994/994-h/994-h.htm',
+      'application/epub+zip': 'https://www.gutenberg.org/ebooks/994.epub3.images',
+      'application/x-mobipocket-ebook': 'https://www.gutenberg.org/ebooks/994.kf8.images',
+      'text/plain; charset=utf-8': 'https://www.gutenberg.org/files/994/994-0.txt',
+      'application/rdf+xml': 'https://www.gutenberg.org/ebooks/994.rdf',
+      'image/jpeg': 'https://www.gutenberg.org/cache/epub/994/pg994.cover.medium.jpg',
+      'application/octet-stream': 'https://www.gutenberg.org/cache/epub/994/pg994-h.zip',
+      'text/plain; charset=us-ascii': 'https://www.gutenberg.org/ebooks/994.txt.utf-8'
+    },
+    download_count: 2805,
+    genres: [ 'drama' ]
+  }
+]
+
+</code></pre>
+<P> 
+Use <span class="hightlight">$exsits</span> I searched for titles that contained two or more languages. The logic here is a little bit tricky, I'm checking to see if the "1" element of the languages array exists. (Note that "'Diccionario Ingles-Español-Tagalog" contains 3 lanuages)
+</P><pre><code>
+
+db.books.find({"languages.1": {$exists:true}},{authors:1,title:1,languages:1,_id:0}).limit(5)
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    title: 'Tractatus Logico-Philosophicus',
+    authors: [
+      {
+        name: 'Wittgenstein, Ludwig',
+        birth_year: 1889,
+        death_year: 1951
+      }
+    ],
+    languages: [ 'de', 'en' ]
+  },
+  {
+    title: 'Diccionario Ingles-Español-Tagalog: Con partes de la oracion y pronunciacion figurada',
+    authors: [
+      {
+        name: 'Calderón, Sofronio G.',
+        birth_year: 1878,
+        death_year: 1953
+      }
+    ],
+    languages: [ 'en', 'es', 'tl' ]
+  },
+  {
+    title: 'A First Spanish Reader',
+    authors: [
+      { name: 'Remy, Alfred', birth_year: 1870, death_year: 1937 },
+      {
+        name: 'Roessler, Erwin W. (Erwin William)',
+        birth_year: 1880,
+        death_year: 1926
+      }
+    ],
+    languages: [ 'en', 'es' ]
+  },
+  {
+    title: 'Doña Perfecta',
+    authors: [
+      {
+        name: 'Pérez Galdós, Benito',
+        birth_year: 1843,
+        death_year: 1920
+      }
+    ],
+    languages: [ 'en', 'es' ]
+  },
+  {
+    title: 'French Conversation and Composition',
+    authors: [
+      {
+        name: 'Wann, Harry Vincent',
+        birth_year: 1887,
+        death_year: null
+      }
+    ],
+    languages: [ 'en', 'fr' ]
+  }
+]
+</code></pre>
+ <P> <BR><BR>
+<h2>AGGREGRATION PIPELINE</h2>
+</P>
+<P> 
+This query since it filters for one author, could be done much more easily with countDocuments() but I introduced the first two parts of the aggregation pipeline: <span class="hightlight"> $match</span> and <span class="hightlight"> $group</span>. NOTE: importantly in  <span class="hightlight"> $group</span> and column <span class="hightlight"> _id</span> is where are you specify what property you are grouping on. Here we are grouping on the entire $authors array.
+</P>
+<P> 
+
+</P><pre><code>
+db.books.aggregate([
+    {
+        $match: {
+        "authors.name": "Melville, Herman"
+        }
+    },
+    {
+        $group: {
+            _id: "$authors",
+            melville_work: {$count: {}}
+        }
+    }
+
+])
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    _id: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    melville_work: 16
+  }
+]
+
+
+</code></pre>
+<P> 
+Here is a more proper aggregation, that is aggregating all of the authors and getting the authors who have the most works in the database. In <span class="hightlight"> $group</span> I specify <span class="hightlight"> $count</span> which, like in SQL, counts the number of documents in the group. I also included later parts of the aggregation pipeline: <span class="hightlight"> $sort</span> and <span class="hightlight"> $limit</span>.
+</P><pre><code>
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: "$authors",
+            authors_work: {$count: {}}
+        }
+    },
+    {
+        $sort: {
+            authors_work: -1
+        }
+    },
+    {
+        $limit: 10
+    }
+
+])
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: [
+      { name: 'Dickens, Charles', birth_year: 1812, death_year: 1870 }
+    ],
+    authors_work: 49
+  },
+  {
+    _id: [ { name: 'Twain, Mark', birth_year: 1835, death_year: 1910 } ],
+    authors_work: 44
+  },
+  {
+    _id: [ { name: 'Conrad, Joseph', birth_year: 1857, death_year: 1924 } ],
+    authors_work: 33
+  },
+  {
+    _id: [
+      {
+        name: 'Wells, H. G. (Herbert George)',
+        birth_year: 1866,
+        death_year: 1946
+      }
+    ],
+    authors_work: 30
+  },
+  {
+    _id: [ { name: 'London, Jack', birth_year: 1876, death_year: 1916 } ],
+    authors_work: 25
+  },
+  {
+    _id: [
+      {
+        name: 'Doyle, Arthur Conan',
+        birth_year: 1859,
+        death_year: 1930
+      }
+    ],
+    authors_work: 24
+  },
+  {
+    _id: [
+      {
+        name: 'Baum, L. Frank (Lyman Frank)',
+        birth_year: 1856,
+        death_year: 1919
+      }
+    ],
+    authors_work: 23
+  },
+  {
+    _id: [ { name: 'Hardy, Thomas', birth_year: 1840, death_year: 1928 } ],
+    authors_work: 23
+  },
+  {
+    _id: [
+      {
+        name: 'Montgomery, L. M. (Lucy Maud)',
+        birth_year: 1874,
+        death_year: 1942
+      }
+    ],
+    authors_work: 23
+  },
+  {
+    _id: [
+      { name: 'Kipling, Rudyard', birth_year: 1865, death_year: 1936 }
+    ],
+    authors_work: 22
+  }
+]
+
+</code></pre>
+<P> 
+Next, I added one field to the group, to get the total downloads using <span class="hightlight"> $sum</span>. Note that the property that you want to add up needs to be in quotation marks and with a dollar sign.
+</P><pre><code>
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: "$authors",
+            authors_work: {$count: {}},
+            total_downloads: {$sum: "$download_count"}
+        }
+    },
+    {
+        $sort: {
+            total_downloads: -1
+        }
+    },
+    {
+        $limit: 10
+    }
+
+])
+
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: [ { name: 'Austen, Jane', birth_year: 1775, death_year: 1817 } ],
+    authors_work: 20,
+    total_downloads: 93639
+  },
+  {
+    _id: [
+      { name: 'Dickens, Charles', birth_year: 1812, death_year: 1870 }
+    ],
+    authors_work: 49,
+    total_downloads: 86285
+  },
+  {
+    _id: [
+      { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 }
+    ],
+    authors_work: 16,
+    total_downloads: 82149
+  },
+  {
+    _id: [
+      {
+        name: 'Montgomery, L. M. (Lucy Maud)',
+        birth_year: 1874,
+        death_year: 1942
+      }
+    ],
+    authors_work: 23,
+    total_downloads: 69675
+  },
+  {
+    _id: [
+      {
+        name: 'Dostoyevsky, Fyodor',
+        birth_year: 1821,
+        death_year: 1881
+      }
+    ],
+    authors_work: 13,
+    total_downloads: 66842
+  },
+  {
+    _id: [ { name: 'Twain, Mark', birth_year: 1835, death_year: 1910 } ],
+    authors_work: 44,
+    total_downloads: 66703
+  },
+  {
+    _id: [ { name: 'Eliot, George', birth_year: 1819, death_year: 1880 } ],
+    authors_work: 14,
+    total_downloads: 62404
+  },
+  {
+    _id: [
+      {
+        name: 'Shelley, Mary Wollstonecraft',
+        birth_year: 1797,
+        death_year: 1851
+      }
+    ],
+    authors_work: 10,
+    total_downloads: 60944
+  },
+  {
+    _id: [
+      {
+        name: 'Forster, E. M. (Edward Morgan)',
+        birth_year: 1879,
+        death_year: 1970
+      }
+    ],
+    authors_work: 10,
+    total_downloads: 57698
+  },
+  {
+    _id: [
+      { name: 'Dumas, Alexandre', birth_year: 1802, death_year: 1870 },
+      { name: 'Maquet, Auguste', birth_year: 1813, death_year: 1888 }
+    ],
+    authors_work: 5,
+    total_downloads: 56816
+  }
+]
+
+
+
+</code></pre><P> 
+We noted that the last result contained two authors: first, the actual author, then the translator. Because we searched the entire  <span class="hightlight"> authors</span> array it only grouped matches across the entire array.<BR><BR>
+Next, I re-added <span class="hightlight"> $match</span> to the top of the pipeline to get approximately 20th century authors.
+</P><pre><code>
+
+db.books.aggregate([
+    {
+        $match: {"authors.birth_year":{$gt:1875}}
+    },
+    {
+        $group: {
+            _id: "$authors",
+            authors_work: {$count: {}},
+            total_downloads: {$sum: "$download_count"}
+        }
+    },
+    {
+        $sort: {
+            total_downloads: -1
+        }
+    },
+    {
+        $limit: 10
+    }
+
+])
+
+</code></pre>
+<pre><code style="background-color:#444;">
+[
+  {
+    _id: [
+      {
+        name: 'Forster, E. M. (Edward Morgan)',
+        birth_year: 1879,
+        death_year: 1970
+      }
+    ],
+    authors_work: 10,
+    total_downloads: 57698
+  },
+  {
+    _id: [ { name: 'Joyce, James', birth_year: 1882, death_year: 1941 } ],
+    authors_work: 4,
+    total_downloads: 26946
+  },
+  {
+    _id: [ { name: 'Kafka, Franz', birth_year: 1883, death_year: 1924 } ],
+    authors_work: 2,
+    total_downloads: 25432
+  },
+  {
+    _id: [
+      { name: 'Christie, Agatha', birth_year: 1890, death_year: 1976 }
+    ],
+    authors_work: 12,
+    total_downloads: 24916
+  },
+  {
+    _id: [
+      {
+        name: 'Fitzgerald, F. Scott (Francis Scott)',
+        birth_year: 1896,
+        death_year: 1940
+      }
+    ],
+    authors_work: 5,
+    total_downloads: 22829
+  },
+  {
+    _id: [ { name: 'London, Jack', birth_year: 1876, death_year: 1916 } ],
+    authors_work: 25,
+    total_downloads: 19452
+  },
+  {
+    _id: [
+      {
+        name: 'Milne, A. A. (Alan Alexander)',
+        birth_year: 1882,
+        death_year: 1956
+      }
+    ],
+    authors_work: 6,
+    total_downloads: 12724
+  },
+  {
+    _id: [ { name: 'Bond, Nelson S.', birth_year: 1908, death_year: 2006 } ],
+    authors_work: 15,
+    total_downloads: 12374
+  },
+  {
+    _id: [
+      {
+        name: 'Wodehouse, P. G. (Pelham Grenville)',
+        birth_year: 1881,
+        death_year: 1975
+      }
+    ],
+    authors_work: 15,
+    total_downloads: 8744
+  },
+  {
+    _id: [
+      {
+        name: 'Platt, Rutherford Hayes',
+        birth_year: 1894,
+        death_year: 1975
+      }
+    ],
+    authors_work: 1,
+    total_downloads: 7576
+  }
+]
+</code></pre>
+<P> 
+Finally, I changed our original search for most downloaded authors to only aggregate based on the first element in the authors array using <span class="hightlight"> $first</span>. Note, that we get more titles by Alexander Dumas because there are other translators out there.
+</P><pre><code>
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: {$first: "$authors"},
+            authors_work: {$count: {}},
+            total_downloads: {$sum: "$download_count"}
+        }
+    },
+    {
+        $sort: {
+            total_downloads: -1
+        }
+    },
+    {
+        $limit: 10
+    }
+
+])
+</code></pre>
+<pre><code style="background-color:#444;">
+
+[
+  {
+    _id: { name: 'Austen, Jane', birth_year: 1775, death_year: 1817 },
+    authors_work: 21,
+    total_downloads: 93907
+  },
+  {
+    _id: { name: 'Dickens, Charles', birth_year: 1812, death_year: 1870 },
+    authors_work: 49,
+    total_downloads: 86285
+  },
+  {
+    _id: { name: 'Melville, Herman', birth_year: 1819, death_year: 1891 },
+    authors_work: 16,
+    total_downloads: 82149
+  },
+  {
+    _id: {
+      name: 'Montgomery, L. M. (Lucy Maud)',
+      birth_year: 1874,
+      death_year: 1942
+    },
+    authors_work: 23,
+    total_downloads: 69675
+  },
+  {
+    _id: { name: 'Twain, Mark', birth_year: 1835, death_year: 1910 },
+    authors_work: 45,
+    total_downloads: 67945
+  },
+  {
+    _id: { name: 'Dostoyevsky, Fyodor', birth_year: 1821, death_year: 1881 },
+    authors_work: 13,
+    total_downloads: 66842
+  },
+  {
+    _id: { name: 'Eliot, George', birth_year: 1819, death_year: 1880 },
+    authors_work: 14,
+    total_downloads: 62404
+  },
+  {
+    _id: {
+      name: 'Shelley, Mary Wollstonecraft',
+      birth_year: 1797,
+      death_year: 1851
+    },
+    authors_work: 10,
+    total_downloads: 60944
+  },
+  {
+    _id: { name: 'Dumas, Alexandre', birth_year: 1802, death_year: 1870 },
+    authors_work: 9,
+    total_downloads: 58428
+  },
+  {
+    _id: {
+      name: 'Forster, E. M. (Edward Morgan)',
+      birth_year: 1879,
+      death_year: 1970
+    },
+    authors_work: 10,
+    total_downloads: 57698
+  }
+]
+
+</code></pre><P> 
+
+</P><pre><code>
+
+
+</code></pre>
+<pre><code style="background-color:#444;">
+
+</code></pre><P> 
+
+</P><pre><code>
+
+
+</code></pre>
+<P> 
+
+</P><pre><code>
+
+
+</code></pre><P> 
+
+</P><pre><code>
+
+
+</code></pre>
+<P> 
+
+</P><pre><code>
+
+
+</code></pre><P> 
+
+</P><pre><code>
+
+
+</code></pre>
+<P> 
+
+</P><pre><code>
+
+
+</code></pre>
+
+
+
+
+
+</div>
+</div>
+</body>
+</html>

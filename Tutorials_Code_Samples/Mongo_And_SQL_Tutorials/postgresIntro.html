@@ -1,0 +1,2166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+<head>
+    <title>DATA STRUCTURES: INTRODUCTION TO SQL</title>
+<link rel="stylesheet" href="styles.css">
+        <style>
+ .hlite { 
+    background-color: yellow;
+}
+    </style>
+
+</head>
+<body>
+
+<div id="docContainerWrap">
+<div id="docContainer">
+<div id="docNavSearchContainer">
+
+<div id="docContent">
+
+
+<div class="SECT1">
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> INTRODUCTION TO SQL (PostgreSQL)</a></h1>
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> Creating a simple relational database</a></h1>
+  <P> Please note: some of the language and even some of the design of this page is based on the <a href="https://www.postgresql.org/docs/current/" target=_blank>postgreSQL documentation</a>. Their documentation can be quite overly detailed and hard to follow, this page aims to simplify things. Additionally, a helpful supplemental tutorial can be found at: <a href="http://www.postgresqltutorial.com/" target=_blank>http://www.postgresqltutorial.com/</a></p>
+	<P> Today we are going start by creating a very simple database in PostgreSQL. First you will need to install postgresql.
+	<BR><BR>
+	For <b>Mac</b> users: use homebrew to install Postgres, using the following commands (one after the other):<BR>
+	<BR><BR>If you do not have <a href="https://brew.sh/" target=_blank>homebrew</a> installed (MAC only)--follow this simple youtube video (and it SHOULD work): <a href="https://www.youtube.com/watch?v=IWJKRmFLn-g" target=_blank>https://www.youtube.com/watch?v=IWJKRmFLn-g</a>
+<pre class="SCREEN">
+brew install postgresql
+
+brew services start postgresql
+
+createdb `whoami`
+
+psql
+</pre>
+<BR><BR>
+For Windows users, this link may be helpful:<BR><BR>
+<a href="https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/">https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/</a>
+<BR><BR>
+	
+	 A relational database can be imagined as a set of related tables with rows and columns. Rows are the individual entries (or records). Columns are the categories (key values) for each table.</p>
+	<P>Step 1: Create That Database</p>
+	<P> Come up with a name, using only letters, numbers or the _ sign. And type in the following command and hit return. (Note that ';' is crucial!)</p>
+	<pre class="SCREEN">
+<samp class="PROMPT">$</samp> <kbd class=
+"USERINPUT">create database dbname;</kbd>
+</pre>
+	<P>Step 2: Connect to the Database</p>
+		<P> The database exists! Make sure you are connected to the database. If you are not seeing the prompt "dbanme=#" you need to connect. (Note: here we are using command line commands to communicate to the database: they start with '\' but do NOT end with ';') </p>
+	<pre class="SCREEN">
+<samp class="PROMPT">$</samp> <kbd class=
+"USERINPUT">\c dbname</kbd>
+</pre>
+	<P>Step 3: Make Tables & Columns</p>
+	<P> Now let's see if there is anything in it. Use the following command:</p>
+	<pre class="SCREEN">
+<samp class="PROMPT">$</samp> <kbd class=
+"USERINPUT">\d</kbd>
+</pre>
+	<P> "Did not find any relations." Right? That's because we haven't made any tables. Before we run any command to make a table, we need to know what columns the table should have. To do this, we need to understand data types. When we make a table, each column must have a specific data type. Here is an overwhelming list of the options.</p>
+	
+
+
+
+	
+	<div class="TABLE">
+    <a name="DATATYPE-TABLE" id="DATATYPE-TABLE"></a>
+
+    <p class="c3">All Data Types</p>
+
+    <table border="1" class="CALSTABLE">
+      <col />
+      <col />
+      <col />
+
+      <thead>
+        <tr>
+          <th>Name</th>
+
+          <th>Aliases</th>
+
+          <th>Description</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td><tt class="TYPE">bigint</tt></td>
+
+          <td><tt class="TYPE">int8</tt></td>
+
+          <td>signed eight-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">bigserial</tt></td>
+
+          <td><tt class="TYPE">serial8</tt></td>
+
+          <td>autoincrementing eight-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">bit [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>fixed-length bit string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">bit varying [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">varbit</tt></td>
+
+          <td>variable-length bit string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">boolean</tt></td>
+
+          <td><tt class="TYPE">bool</tt></td>
+
+          <td>logical Boolean (true/false)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">box</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>rectangular box on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">bytea</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>binary data (<span class="QUOTE">"byte
+          array"</span>)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">character [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">char [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td>fixed-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">character varying [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">varchar [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td>variable-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">cidr</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>IPv4 or IPv6 network address</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">circle</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>circle on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">date</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>calendar date (year, month, day)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">double precision</tt></td>
+
+          <td><tt class="TYPE">float8</tt></td>
+
+          <td>double precision floating-point number (8 bytes)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">inet</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>IPv4 or IPv6 host address</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">integer</tt></td>
+
+          <td><tt class="TYPE">int</tt>, <tt class=
+          "TYPE">int4</tt></td>
+
+          <td>signed four-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">interval [ <tt class=
+          "REPLACEABLE c4">fields</tt> ] [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>time span</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">json</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>textual JSON data</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">jsonb</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>binary JSON data, decomposed</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">line</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>infinite line on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">lseg</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>line segment on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">macaddr</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>MAC (Media Access Control) address</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">money</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>currency amount</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">numeric [ (<tt class=
+          "REPLACEABLE c4">p</tt>, <tt class=
+          "REPLACEABLE c4">s</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">decimal [ (<tt class=
+          "REPLACEABLE c4">p</tt>, <tt class=
+          "REPLACEABLE c4">s</tt>) ]</tt></td>
+
+          <td>exact numeric of selectable precision</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">path</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>geometric path on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">pg_lsn</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td><span class="PRODUCTNAME">PostgreSQL</span> Log
+          Sequence Number</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">point</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>geometric point on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">polygon</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>closed geometric path on a plane</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">real</tt></td>
+
+          <td><tt class="TYPE">float4</tt></td>
+
+          <td>single precision floating-point number (4 bytes)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">smallint</tt></td>
+
+          <td><tt class="TYPE">int2</tt></td>
+
+          <td>signed two-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">smallserial</tt></td>
+
+          <td><tt class="TYPE">serial2</tt></td>
+
+          <td>autoincrementing two-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">serial</tt></td>
+
+          <td><tt class="TYPE">serial4</tt></td>
+
+          <td>autoincrementing four-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">text</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>variable-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">time [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] [ without time zone
+          ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>time of day (no time zone)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">time [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] with time zone</tt></td>
+
+          <td><tt class="TYPE">timetz</tt></td>
+
+          <td>time of day, including time zone</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">timestamp [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] [ without time zone
+          ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>date and time (no time zone)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">timestamp [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] with time zone</tt></td>
+
+          <td><tt class="TYPE">timestamptz</tt></td>
+
+          <td>date and time, including time zone</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">tsquery</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>text search query</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">tsvector</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>text search document</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">txid_snapshot</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>user-level transaction ID snapshot</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">uuid</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>universally unique identifier</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">xml</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>XML data</td>
+        </tr>
+      </tbody>
+    </table>
+    <p> Here is a more reasonable list of pretty much all the datatypes you might need to use at this point.</p>
+    
+    <div class="TABLE">
+    <a name="DATATYPE-TABLE" id="DATATYPE-TABLE"></a>
+
+    <p class="c3">Common Data Types</p>
+
+    <table border="1" class="CALSTABLE">
+      <col />
+      <col />
+      <col />
+
+      <thead>
+        <tr>
+          <th>Name</th>
+
+          <th>Aliases</th>
+
+          <th>Description</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td><tt class="TYPE">boolean</tt></td>
+
+          <td><tt class="TYPE">bool</tt></td>
+
+          <td>logical Boolean (true/false)</td>
+        </tr>
+
+
+        <tr>
+          <td><tt class="TYPE">character [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">char [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td>fixed-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">character varying [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">varchar [ (<tt class=
+          "REPLACEABLE c4">n</tt>) ]</tt></td>
+
+          <td>variable-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">date</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>calendar date (year, month, day)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">double precision</tt></td>
+
+          <td><tt class="TYPE">float8</tt></td>
+
+          <td>double precision floating-point number (8 bytes)</td>
+        </tr>
+
+
+        <tr>
+          <td><tt class="TYPE">integer</tt></td>
+
+          <td><tt class="TYPE">int</tt>, <tt class=
+          "TYPE">int4</tt></td>
+
+          <td>signed four-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">interval [ <tt class=
+          "REPLACEABLE c4">fields</tt> ] [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>time span</td>
+        </tr>
+
+
+        <tr>
+          <td><tt class="TYPE">money</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>currency amount</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">numeric [ (<tt class=
+          "REPLACEABLE c4">p</tt>, <tt class=
+          "REPLACEABLE c4">s</tt>) ]</tt></td>
+
+          <td><tt class="TYPE">decimal [ (<tt class=
+          "REPLACEABLE c4">p</tt>, <tt class=
+          "REPLACEABLE c4">s</tt>) ]</tt></td>
+
+          <td>exact numeric of selectable precision</td>
+        </tr>
+
+       <tr>
+          <td><tt class="TYPE">real</tt></td>
+
+          <td><tt class="TYPE">float4</tt></td>
+
+          <td>single precision floating-point number (4 bytes)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">serial</tt></td>
+
+          <td><tt class="TYPE">serial4</tt></td>
+
+          <td>autoincrementing four-byte integer</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">text</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>variable-length character string</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">time [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] [ without time zone
+          ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>time of day (no time zone)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">time [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] with time zone</tt></td>
+
+          <td><tt class="TYPE">timetz</tt></td>
+
+          <td>time of day, including time zone</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">timestamp [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] [ without time zone
+          ]</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>date and time (no time zone)</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TYPE">timestamp [ (<tt class=
+          "REPLACEABLE c4">p</tt>) ] with time zone</tt></td>
+
+          <td><tt class="TYPE">timestamptz</tt></td>
+
+          <td>date and time, including time zone</td>
+        </tr>
+
+
+      </tbody>
+    </table>
+      <p>Now in order to create a table we need to know its columns and the datatype for each column. So figure those out first. I am making a database of "Friends" -- think about what kind of information you would want to keep and what datatypes that might entail.</p>
+  <pre class="PROGRAMLISTING">
+CREATE TABLE friends (
+    age integer,
+    name varchar(80),
+    birthday date
+);
+</pre>
+<P>Step 4: Populate the Database</p>
+  <p>When a table is created, it contains no data. The first thing
+  to do before a database can be of much use is to insert data.
+  Data is conceptually inserted one row at a time. Of course you
+  can also insert more than one row, but there is no way to insert
+  less than one row. Even if you know only some column values, a
+  complete row must be created.</p>
+
+  <p>To create a new row, use the INSERT command. For example:
+  <pre class="PROGRAMLISTING">
+INSERT INTO friends VALUES (59, 'Keanu', '1964-09-02');
+</pre>
+  <p> To see what's in the table just use the SELECT command (* shows everything). In the beginning, use this command over and over as you add things so you can see the changes you made.
+  <pre class="PROGRAMLISTING">
+SELECT * FROM friends;
+</pre>
+
+  <p>The data values are listed in the order in which the columns
+  appear in the table, separated by commas. The above syntax has the drawback that you need to know the order of the columns in the table. To avoid this you can also list the columns explicitly. For example, both of the following
+  commands have the same effect as the one above:</p>
+  <pre class="PROGRAMLISTING">
+INSERT INTO friends (age, name, birthday) VALUES (59, 'Keanu', '1964-09-02');
+INSERT INTO friends (name, age, birthday) VALUES ('Keanu', 59, '1964-09-02');
+</pre>
+
+  <p>It is best practices to always list the column
+  names.</p>
+
+  <p>You can insert multiple rows in a single command:</p>
+  <pre class="PROGRAMLISTING">
+INSERT INTO friends (age, name, birthday) VALUES
+    (63, 'Larry', '1961-07-30'),
+    (57, 'Carrie-Anne', '1967-08-21'),
+    (64, 'Hugo', '1960-04-04');
+</pre>
+ <p>But wait, what if we end up getting two Keanus in there, you want to keep track of our individual people somehow. Let's add a column that assigns and numbers to each row. Use ALTER TABLE.</p>
+
+ <pre class="PROGRAMLISTING">
+ALTER TABLE friends ADD COLUMN friend_id serial;
+</pre>
+ <p>But wait again, how do I know that they are really my friends? Let's put in a true/false column.</p>
+
+ <pre class="PROGRAMLISTING">
+ALTER TABLE friends ADD COLUMN still_friend boolean DEFAULT true;
+</pre>
+ <p> And it just so happens that Larry doesn't like being called Larry. So maybe he's not a friend anymore. Using UPDATE and SET and WHERE.</p>
+
+ <pre class="PROGRAMLISTING">
+UPDATE friends SET still_friend = FALSE WHERE name = 'Larry';</pre>
+ <p> What if I changed his name to Lawrence?</p>
+ <pre class="PROGRAMLISTING">
+UPDATE friends SET name = 'Lawrence' WHERE name = 'Larry';
+</pre>
+ <p> Nope he is still not on board. And since this is a friends list, let's remove him from the whole thing.</p>
+ <pre class="PROGRAMLISTING">
+
+DELETE FROM friends WHERE name = 'Lawrence';
+</pre>
+
+<p> Now I want to keep track of messages from them --and hopefully there'll be multiple messages. So instead of cluttering this table with more rows and columns let's make a new table.</P>
+ <pre class="PROGRAMLISTING">
+CREATE TABLE messages (
+    friend_id integer,
+    time timestamp,
+    message text
+);
+</pre>
+<p> I insert my most recent message data.</P>
+
+  <pre class="PROGRAMLISTING">
+INSERT INTO messages (friend_id, time, message) VALUES
+    (1, now(), 'YO'),
+    (1, now(), 'HEY'),
+    (1, now(), 'how are you doing today?');
+</pre>
+<p> And now I can use a JOIN to bring those two tables together.</P>
+
+  <pre class="PROGRAMLISTING">
+SELECT friends.name, messages.time, messages.message
+    FROM messages
+    JOIN friends ON friends.friend_id = messages.friend_id;
+</pre>
+
+
+
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT">  Building a table like this is a very simplistic way of understanding how tables are created. Much of the table building is on the administrative side, and often SQL databases are way too large to do any of these hand changes to the actual structure.</a></h1>
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> What is most crucial to learning SQL is learning how to query tables. For these examples we will be using the very complex, and very navigable and well-built Mondial database of Geo political data. </a></h1>
+  
+  <p><b>SETTING UP MONDIAL</b></p>
+
+<p>Below are instructions for downloading in setting up the database. Please follow them carefully.</p>
+
+<p>The first thing you need to do is download that .psql files from the Mondial website:</p>
+
+<p><a href="https://www.dbis.informatik.uni-goettingen.de/Mondial/" target="_blank">https://www.dbis.informatik.uni-goettingen.de/Mondial/</a></p>
+
+<p>Make sure you download the first two PostgreSQL files (not the files for other database formats). Look for this list of files:</p>
+
+<p>Generating the Database under PostgreSQL
+Database schema for postgres "mondial-schema.psql"
+Input statements for postgres "mondial-inputs.psql"</p>
+
+<p>Download them as files don't just click on the links. Download the first two: schema and inputs, do not download the drop table statements.</p>
+
+<p>Make sure you know where they are on your computer once they are downloaded. I highly recommend you move these files out of the "downloads" folder into a folder of your making. (A side note here about best practices when coding on your computer--do not store data files or code files in your downloads folder and especially not your desktop (and NEVER in a cloud drive). You should have a specific folder for this class somewhere explicitly in your hard drive--and for each project you should make new separate well-named folders that you know how to find.)</p>
+
+<p>Inputting into the mondial database into your PostgreSQL server:</p>
+
+<p>First start up your database server:
+
+<p>Open up your terminal and type in the command:</p>
+
+<pre class="PROGRAMLISTING">psql</pre>
+
+<p>You make need to use the more specific:/p>
+<pre class="PROGRAMLISTING">psql -U postgres</pre>
+
+
+
+<p>You should have your terminal with an input prompt that looks like this:</p>
+
+<pre class="PROGRAMLISTING">postgres=#</pre>
+
+<p>(note that "postgres" is the name of the current database you are connected to and, importantly, =# means that you "in" Postgres and you are typing commands to the database server--as opposed to $ or % which means you are typing commands to your computers terminal/command line.)</p>
+
+<p>Next you want to create your database, type this:</p>
+
+<pre class="PROGRAMLISTING">create database mondial;</pre>
+
+<p>You should get the response: CREATE DATABASE</p>
+
+<p>Now you want to connect to that new database:</p>
+
+<pre class="PROGRAMLISTING">\c mondial</pre>
+
+<p>If you are successful your prompt will look like this:</p>
+
+<p>mondial=#</p>
+
+<p>That means you are in your new empty database.</p>
+
+<p>Time to import the tables. The import command is simply:</p>
+
+<pre class="PROGRAMLISTING">\i absolutepathtothefile</pre>
+
+<p>The trick here is that you need to use absolute file paths to access the files--this is the filename as your computer understands it. In Mac there are two trustworthy ways of getting an absolute path: you can drag and drop the file into terminal, or you can control+click on the file and then also hold down the option button and choose "Copy "file" as Pathname" -- then you paste the pathname into the terminal. In Windows, try "Shift + right-click" and select "copy as path". So you will need to figure this out.</p>
+
+<p>You need to import the two files in the following order:</p>
+
+<p>First, you need to import the schema (note that this is my absolute path not yours so do not copy and paste this):</p>
+
+<pre class="PROGRAMLISTING">\i /Users/Me/Documents/mondial/mondial-schema.psql</pre>
+
+<p>You should get a bunch of CREATE TABLE responses.</p>
+
+<p>Next, import the information into the tables</p>
+
+<pre class="PROGRAMLISTING">\i /Users/Me/Documents/mondial/mondial-inputs.psql</pre>
+
+<p>This will go on for little while--like 10 or 15 seconds. Please be patient. You will see a lot of INSERT statements. Wait until it is done, and don't worry about any errors or warnings at the end.</p>
+
+<p>When your prompt comes back type:</p>
+
+<pre class="PROGRAMLISTING">\d</pre>
+
+<p>That will show the overall schema, and will list every single table. If you don't want to arrow down through the entire list you can press 'q' to get back to the command line. </p>
+
+<p>Then try typing:</p>
+
+<pre class="PROGRAMLISTING">\d tablename</pre>
+
+<p>Using the name of a table you see in the schema like 'airport' or 'geo_lake', to see what's in that particular table.</p>
+
+<p>Then try this simple query:</p>
+
+<pre class="PROGRAMLISTING">SELECT * FROM airport LIMIT 15;</pre>
+
+<p>This will get you the first 15 entries for the 'airport' table in the mondial database!
+    <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> Now on to the all important commands and structures for querying!!</a></h1>
+ <P> 
+
+These <B>two cheet sheets</b> outline the two separate types of queries:<BR><BR>
+<a href="SQL-cheat_sheet1.pdf"> Regular queries</a> and <BR><a href="SQL-cheat_sheet2.pdf">Aggregate Queries</a><BR><BR>
+They also contain some helpful command line shortcuts as well. It will also be helpful to take a look at this <a href="mondial-schema.pdf">schema for the Mondial</a> database as it tells you what columns every table contains and how they connect to each other.
+</P> <P> 
+
+First we listed the tables using the <span class="hlite">\d</span> command.
+</P>
+ <pre class="PROGRAMLISTING">
+mondial=# \d
+               List of relations
+ Schema |       Name        | Type  |  Owner   
+--------+-------------------+-------+----------
+ public | airport           | table | postgres
+ public | borders           | table | postgres
+ public | city              | table | postgres
+ public | citylocalname     | table | postgres
+ public | cityothername     | table | postgres
+ public | citypops          | table | postgres
+ public | continent         | table | postgres
+ public | country           | table | postgres
+ public | countrylocalname  | table | postgres
+ public | countryothername  | table | postgres
+ public | countrypops       | table | postgres
+ public | desert            | table | postgres
+ public | economy           | table | postgres
+ public | encompasses       | table | postgres
+ public | ethnicgroup       | table | postgres
+ public | geo_desert        | table | postgres
+ public | geo_estuary       | table | postgres
+ public | geo_island        | table | postgres
+ public | geo_lake          | table | postgres
+ public | geo_mountain      | table | postgres
+ public | geo_river         | table | postgres
+ public | geo_sea           | table | postgres
+ public | geo_source        | table | postgres
+ public | island            | table | postgres
+ public | islandin          | table | postgres
+ public | ismember          | table | postgres
+ public | lake              | table | postgres
+ public | lakeonisland      | table | postgres
+ public | language          | table | postgres
+ public | located           | table | postgres
+ public | locatedon         | table | postgres
+ public | mergeswith        | table | postgres
+ public | mountain          | table | postgres
+ public | mountainonisland  | table | postgres
+ public | organization      | table | postgres
+ public | politics          | table | postgres
+ public | population        | table | postgres
+ public | province          | table | postgres
+ public | provincelocalname | table | postgres
+ public | provinceothername | table | postgres
+ public | provpops          | table | postgres
+ public | religion          | table | postgres
+ public | river             | table | postgres
+ public | riveronisland     | table | postgres
+
+</pre>
+
+
+
+<p>
+Note that on a Mac <span class="hlite"> f </span>and <span class="hlite"> b </span>lets you page down or page up respectively-instead of pressing return or the down arrow to get one line at a time. If you have a Windows machine and you have figured out how to, do this please post on slack!
+<BR>
+<BR>
+Also note that you can exit the list by pressing <span class="hlite">q</span>. This will get you back to the prompt without having to view every single result.
+</p><p>
+
+Next we checked the columns of the table "airport" using <span class="hlite">\d tablename</span>
+</P>
+ <pre class="PROGRAMLISTING">
+mondial=# \d airport
+                       Table "public.airport"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ iatacode  | character varying(3)   |           | not null | 
+ name      | character varying(100) |           |          | 
+ country   | character varying(4)   |           |          | 
+ city      | character varying(50)  |           |          | 
+ province  | character varying(50)  |           |          | 
+ island    | character varying(50)  |           |          | 
+ latitude  | numeric                |           |          | 
+ longitude | numeric                |           |          | 
+ elevation | numeric                |           |          | 
+ gmtoffset | numeric                |           |          | 
+Indexes:
+    "airport_pkey" PRIMARY KEY, btree (iatacode)
+Check constraints:
+    "airplat" CHECK (latitude >= '-90'::integer::numeric AND latitude <= 90::numeric)
+    "airplon" CHECK (longitude >= '-180'::integer::numeric AND longitude <= 180::numeric)
+</pre>
+<p>
+The two most basic parameters, you can't do any queries without them, are <span class="hlite">SELECT</span> and <span class="hlite">FROM</span>. <BR><BR><span class="hlite">SELECT</span> specifies the columns you want to see <span class="hlite">*</span> will include all columns. <BR><BR><span class="hlite">FROM</span> specifies the table. It is always in this order, columns first then table. <BR><BR>And the most critical structural pattern in SQL is the order of selection. See the cheat sheets for the order of selection criteria. 
+</p>
+<p>
+Here we selected all the columns and rows in the "airport" table.
+</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM airport;
+ iatacode |                        name                         | country |            city            |                 province                 |            island             |   latitude    |  longitude   | elevation | gmtoffset 
+----------+-----------------------------------------------------+---------+----------------------------+------------------------------------------+-------------------------------+---------------+--------------+-----------+-----------
+ HEA      | Herat                                               | AFG     | Herat                      | Afghanistan                              |                               |     34.210017 |      62.2283 |       977 |         5
+ KBL      | Kabul Intl                                          | AFG     | Kabul                      | Afghanistan                              |                               |     34.565853 |    69.212328 |      1792 |         5
+ TIA      | Tirana Rinas                                        | AL      | Tirana                     | Albania                                  |                               |     41.414742 |    19.720561 |        38 |         1
+ TEE      | Cheikh Larbi Tebessi                                | DZ      | Tébessa                    | Algeria                                  |                               |     35.431611 |     8.120717 |       811 |         1
+ BLJ      | Batna Airport                                       | DZ      | Batna                      | Algeria                                  |                               |     35.752106 |     6.308589 |       822 |         1
+ BJA      | Soummam                                             | DZ      | Bejaïa                     | Algeria                                  |                               |     36.711997 |     5.069922 |         6 |         1
+ TMR      | Tamanrasset                                         | DZ      | Tamanrasset                | Algeria                                  |                               |     22.811461 |     5.451075 |      1377 |         1
+ BSK      | Biskra                                              | DZ      | Biskra                     | Algeria                                  |                               |     34.793289 |     5.738231 |        88 |         1
+ CZL      | Mohamed Boudiaf Intl                                | DZ      | Constantine                | Algeria                                  |                               |     36.276028 |     6.620386 |       691 |         1
+ QSF      | Ain Arnat Airport                                   | DZ      | Sétif                      | Algeria                                  |                               |       36.1781 |      5.32449 |      1024 |         1
+ ORN      | Es Senia                                            | DZ      | Oran                       | Algeria                                  |                               |     35.623858 |    -0.621183 |        90 |         1
+ GHA      | Noumerat                                            | DZ      | Ghardaïa                   | Algeria                                  |                               |     32.384106 |     3.794114 |       461 |         1
+ AAE      | Annaba                                              | DZ      | Annaba                     | Algeria                                  |                               |     36.822225 |     7.809167 |         5 |         1
+ ALG      | Houari Boumediene                                   | DZ      | Algiers                    | Algeria                                  |                               |     36.691014 |     3.215408 |        25 |         1
+ TLM      | Zenata                                              | DZ      | Tlemcen                    | Algeria         :
+</PRE>
+<p>  
+Next we used specified columns so the output would be more readable.
+</P>
+ <pre class="PROGRAMLISTING">
+ondial=# SELECT name, country, city, province FROM airport;
+                        name                         | country |            city            |                 province                 
+-----------------------------------------------------+---------+----------------------------+------------------------------------------
+ Herat                                               | AFG     | Herat                      | Afghanistan
+ Kabul Intl                                          | AFG     | Kabul                      | Afghanistan
+ Tirana Rinas                                        | AL      | Tirana                     | Albania
+ Cheikh Larbi Tebessi                                | DZ      | Tébessa                    | Algeria
+ Batna Airport                                       | DZ      | Batna                      | Algeria
+ Soummam                                             | DZ      | Bejaïa                     | Algeria
+ Tamanrasset                                         | DZ      | Tamanrasset                | Algeria
+ Biskra                                              | DZ      | Biskra                     | Algeria
+ Mohamed Boudiaf Intl                                | DZ      | Constantine                | Algeria
+ Ain Arnat Airport                                   | DZ      | Sétif                      | Algeria
+ Es Senia                                            | DZ      | Oran                       | Algeria
+ Noumerat                                            | DZ      | Ghardaïa                   | Algeria
+ Annaba                                              | DZ      | Annaba                     | Algeria
+ Houari Boumediene                                   | DZ      | Algiers                    | Algeria
+ Zenata                                              | DZ      | Tlemcen                    | Algeria
+ Pago Pago Intl                                      | AS      | Pago Pago                  | American Samoa
+ Ondjiva Pereira Airport                             | ANG     | Ngiva                      | Cunene
+ Lubango                                             | ANG     | Lubango                    | Huíla
+ Cabinda                                             | ANG     | Cabinda                    | Cabinda
+ Menongue                                            | ANG     | Menongue                   | Cuando Cubango
+ Luanda 4 De Fevereiro                               | ANG     | Luanda                     | Luanda
+ Huambo                                              | ANG     | Huambo                     | Huambo
+ Wallblake                                           | AXA     | The Valley                 | Anguilla
+ V C Bird Intl                                       | AG      | St. John's                 | Antigua and Barbuda
+ La Rioja                                            | RA      | La Rioja                   | La Rioja
+ Jujuy                                               | RA      | San Salvador de Jujuy      | Jujuy
+ Comandante Espora                                   | RA      | Bahía Blanca               | Buenos Aires
+ Teniente Benjamin Matienzo                          | RA      | San Miguel de Tucumán      | Tucumán
+ San Luis                                            | RA      | San Luis                   | San Luis
+ Santiago del Estero                                 | RA      | Santiago del Estero        | Santiago de Estero
+ Sauce Viejo                                         | RA      | Santa Fe                   | Santa Fe
+
+ </pre>
+<p>  
+Next we used <span class="hlite"> WHERE </span> to find only the only the airports in Algeria. I also specified the columns we wanted to see to make the results more readable.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, province FROM airport WHERE province = 'Algeria';
+         name         | country |    city     | province 
+----------------------+---------+-------------+----------
+ Cheikh Larbi Tebessi | DZ      | Tébessa     | Algeria
+ Batna Airport        | DZ      | Batna       | Algeria
+ Soummam              | DZ      | Bejaïa      | Algeria
+ Tamanrasset          | DZ      | Tamanrasset | Algeria
+ Biskra               | DZ      | Biskra      | Algeria
+ Mohamed Boudiaf Intl | DZ      | Constantine | Algeria
+ Ain Arnat Airport    | DZ      | Sétif       | Algeria
+ Es Senia             | DZ      | Oran        | Algeria
+ Noumerat             | DZ      | Ghardaïa    | Algeria
+ Annaba               | DZ      | Annaba      | Algeria
+ Houari Boumediene    | DZ      | Algiers     | Algeria
+ Zenata               | DZ      | Tlemcen     | Algeria
+(12 rows)
+
+ </pre>
+ <p>  
+Then we added <span class="hlite"> ORDER BY </span> to get our cities in alphabetical order (that's the kind of order computers like to do with text). (As I discussed in class, because the Postgres Application knows the datatype of each column it knows also how to sort them either alphabetically or numerically.)</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, province FROM airport WHERE province = 'Algeria' ORDER BY city;
+         name         | country |    city     | province 
+----------------------+---------+-------------+----------
+ Houari Boumediene    | DZ      | Algiers     | Algeria
+ Annaba               | DZ      | Annaba      | Algeria
+ Batna Airport        | DZ      | Batna       | Algeria
+ Soummam              | DZ      | Bejaïa      | Algeria
+ Biskra               | DZ      | Biskra      | Algeria
+ Mohamed Boudiaf Intl | DZ      | Constantine | Algeria
+ Noumerat             | DZ      | Ghardaïa    | Algeria
+ Es Senia             | DZ      | Oran        | Algeria
+ Ain Arnat Airport    | DZ      | Sétif       | Algeria
+ Tamanrasset          | DZ      | Tamanrasset | Algeria
+ Zenata               | DZ      | Tlemcen     | Algeria
+ Cheikh Larbi Tebessi | DZ      | Tébessa     | Algeria
+(12 rows)
+ </pre>
+   <p>  
+Because <span class="hlite"> ORDER BY </span> defaults to <span class="hlite">ASC</span> (ascending order) we took a look at difference between ascending and descending order alphabetically using <span class="hlite">DESC </span></P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, province FROM airport WHERE province = 'Algeria' ORDER BY city DESC;
+         name         | country |    city     | province 
+----------------------+---------+-------------+----------
+ Cheikh Larbi Tebessi | DZ      | Tébessa     | Algeria
+ Zenata               | DZ      | Tlemcen     | Algeria
+ Tamanrasset          | DZ      | Tamanrasset | Algeria
+ Ain Arnat Airport    | DZ      | Sétif       | Algeria
+ Es Senia             | DZ      | Oran        | Algeria
+ Noumerat             | DZ      | Ghardaïa    | Algeria
+ Mohamed Boudiaf Intl | DZ      | Constantine | Algeria
+ Biskra               | DZ      | Biskra      | Algeria
+ Soummam              | DZ      | Bejaïa      | Algeria
+ Batna Airport        | DZ      | Batna       | Algeria
+ Annaba               | DZ      | Annaba      | Algeria
+ Houari Boumediene    | DZ      | Algiers     | Algeria
+(12 rows)
+ </pre>  <p>  
+Sticking with <span class="hlite"> ORDER BY </span> we ordered by a numerical column, specifically <i>latitude</i> to see what the southernmost airports might be. The answer we got made sense because it was in Argentina.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, latitude FROM airport ORDER BY latitude;
+                        name                         | country |            city            |   latitude    
+-----------------------------------------------------+---------+----------------------------+---------------
+ Ushuaia Malvinas Argentinas                         | RA      | Ushuaia                    |    -54.843278
+ Carlos Ibanez Del Campo Intl                        | RCH     | Punta Arenas               |    -53.002642
+ Port Stanley                                        | FALK    | Stanley                    |      -51.6857
+ Rio Gallegos                                        | RA      | Río Gallegos               |    -51.608875
+ Dunedin                                             | NZ      | Dunedin                    |    -45.928055
+ Comodoro Rivadavia                                  | RA      | Comodoro Rivadavia         |    -45.785347
+ Christchurch Intl                                   | NZ      | Christchurch               |    -43.489358
+ Hobart                                              | AUS     | Hobart                     |    -42.836111
+ El Tepual Intl                                      | RCH     | Puerto Montt               |    -41.438886
+ Wellington Intl                                     | NZ      | Wellington                 |    -41.327221
+ Pichoy                                              | RCH     | Valdivia                   |    -39.649956
+ Presidente Peron                                    | RA      | Neuquén                    |       -38.949
+ Maquehue                                            | RCH     | Temuco                     |    -38.766819
+ Comandante Espora                                   | RA      | Bahía Blanca               |    -38.724967
+ Mar Del Plata                                       | RA      | Mar del Plata              |    -37.934167
+ Hamilton                                            | NZ      | Hamilton                   |    -37.866661
+ Melbourne Intl                                      | AUS     | Melbourne                  |    -37.673333
+ Auckland Intl                                       | NZ      | Auckland                   |    -37.008056
+ Carriel Sur Intl                                    | RCH     | Concepción                 |     -36.77265
+ Canberra                                            | AUS     | Canberra                   |    -35.306944
+ Adelaide Intl                                       | AUS     | Adelaide                   |       -34.945
+ Carrasco Intl                                       | ROU     | Montevideo                 |    -34.838417
+ Ministro Pistarini                                  | RA      | Buenos Aires               |    -34.822222
+ Aeroparque Jorge Newbery                            | RA      | Buenos Aires               |    -34.559175
+ Port Elizabeth Intl                                 | RSA     | Nelson Mandela Bay         |    -33.984919
+ Cape Town Intl                                      | RSA     | Cape Town                  |    -33.964806
+ Sydney Intl                                         | AUS     | Sydney                     |    -33.946111
+ Arturo Merino Benitez Intl                          | RCH     | Santiago                   |    -33.392975
+ San Luis                                            | RA      | San Luis                   |    -33.273192
+ East London                                         | RSA     | Buffalo City               |    -33.035569
+ Rosario                                             | RA      | Rosario                    |    -32.903611
+
+ </pre>
+ 
+  <P>
+Next I flipped the <span class="hlite">ORDER BY</span> using <span class="hlite">DESC</span> so I could get the northernmost airports. </P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, latitude FROM airport ORDER BY latitude DESC;
+                        name                         | country |            city            |   latitude    
+-----------------------------------------------------+---------+----------------------------+---------------
+ Longyear                                            | SVA     | Longyearbyen               |     78.246111
+ Hammerfest Airport                                  | N       | Hammerfest                 |     70.679722
+ Vadsoe                                              | N       | Vadsø                      |        70.065
+ Alykel                                              | R       | Norilsk                    |     69.311053
+ Murmansk                                            | R       | Murmansk                   |     68.781672
+ Framnes                                             | N       | Narvik                     |     68.435833
+ Vorkuta Airport                                     | R       | Vorkuta                    |       67.4886
+ Salekhard Airport                                   | R       | Salekhard                  |     66.590753
+ Rovaniemi                                           | SF      | Rovaniemi                  |     66.564822
+ Novyi Urengoy                                       | R       | Novyj Urengoj              |     66.041811
+ Kallax                                              | S       | Lulea                      |     65.543758
+ Oulu                                                | SF      | Oulu                       |     64.930061
+ Talagi                                              | R       | Arkhangelsk                |     64.360281
+ Nuuk                                                | GL      | Nuuk                       |     64.190922
+ Keflavik International Airport                      | IS      | Keflavik                   |        63.985
+ Umea                                                | S       | Umeå                       |     63.791828
+ Iqaluit                                             | CDN     | Iqaluit                    |      63.75639
+ Vaernes                                             | N       | Trondheim                  |     63.457556
+ Östersund Airport                                   | S       | Ostersund                  |       63.1944
+ Noyabrsk                                            | R       | Nojabrsk                   |     63.110079
+ Vaasa                                               | SF      | Vaasa                      |      63.05065
+ Kuopio                                              | SF      | Kuopio                     |      63.00715
+ Aro                                                 | N       | Molde                      |     62.744722
+ Joensuu                                             | SF      | Joensuu                    |     62.662906
+ Yellowknife                                         | CDN     | Yellowknife                |     62.462778
+ Jyväskylä                                           | SF      | Jyväskylä                  |     62.399453
+ Yakutsk                                             | R       | Yakutsk                    |      62.09325
+ Vagar                                               | FO      | Tórshavn                   |     62.063628
+ Petrozavodsk Airport                                | R       | Petrozavodsk               |       61.8852
+ Syktyvkar                                           | R       | Syktyvkar                  |      61.64705
+ Pori                                                | SF      | Pori                       |     61.461686
+
+
+ </pre>
+  <P>
+Then I searched for the airports at the lowest elevations.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, elevation FROM airport ORDER BY elevation ;
+                        name                         | country |            city            | elevation 
+-----------------------------------------------------+---------+----------------------------+-----------
+ Atyrau                                              | KZ      | Atyrau                     |       -22
+ Astrakhan                                           | R       | Astrakhan                  |       -20
+ Rotterdam                                           | NL      | Rotterdam                  |        -5
+ Schiphol                                            | NL      | Amsterdam                  |        -3
+ Alexandria Intl                                     | ET      | Al Iskandariyah            |        -2
+ Louis Armstrong New Orleans Intl                    | USA     | New Orleans                |         1
+ Edward Bodden Airfield                              | CYM     |                            |         1
+ Rafael Nunez                                        | CO      | Cartagena                  |         1
+ Dunedin                                             | NZ      | Dunedin                    |         1
+ Venezia Tessera                                     | I       | Venézia                    |         2
+ Owen Roberts Intl                                   | CYM     | George Town                |         2
+ Gimhae Intl                                         | ROK     | Busan                      |         2
+ Rach Gia                                            | VN      | Rach Gia                   |         2
+ Pagadian                                            | RP      | Pagadian                   |         2
+ Miami Intl                                          | USA     | Miami                      |         2
+ Saga Airport                                        | J       | Saga                       |         2
+ Niigata                                             | J       | Niigata                    |         2
+ Gerrard Smith Intl                                  | CYM     |                            |         2
+ Cochin                                              | IND     | Kochi                      |         2
+ Suvarnabhumi Intl                                   | THA     | Bangkok                    |         2
+ Ioannis Kapodistrias Intl                           | GR      | Kerkyra                    |         2
+ Marshall Islands Intl                               | MH      | Majuro                     |         2
+ Cat Bi International Airport                        | VN      | Haiphong                   |         2
+ Bahrain Intl                                        | BRN     | Al Manāmah                 |         2
+ Larnaca                                             | CY      | Larnaka                    |         2
+ Faa'a International                                 | PF      | Papeete                    |         2
+ Male Intl                                           | MV      | Male                       |         2
+ Aden Intl                                           | YE      | Aden                       |         2
+ Pisa                                                | I       | Pisa                       |         2
+ Nouakchott                                          | RIM     | Nouakchott                 |         2
+ Barra Airport                                       | GB      |                            |         2
+
+
+ </pre>
+   <P>
+Followed by the highest elevations by reversing the <span class="hlite"> ORDER BY </span> using <span class="hlite"> DESC </span>. But this time we got something less expected! (This happens a lot.) </P>
+ <pre class="PROGRAMLISTING">
+ondial=# SELECT name, country, city, elevation FROM airport ORDER BY elevation DESC;
+                        name                         | country |            city            | elevation 
+-----------------------------------------------------+---------+----------------------------+-----------
+ Xiangfan Airport                                    | CN      | Xiangyang                  |          
+ Ganzhou Airport                                     | CN      | Ganzhou                    |          
+ Lianyungang Airport                                 | CN      | Lianyungang                |          
+ Yancheng Airport                                    | CN      | Yancheng                   |          
+ Shubuling Airport                                   | CN      | Linyi                      |          
+ Wenzhou Longwan Airport                             | CN      | Wenzhou                    |          
+ Jieyang Chaoshan International Airport              | CN      | Shantou                    |          
+ Luzhou Airport                                      | CN      | Luzhou                     |          
+ Jinzhou Airport                                     | CN      | Jinzhou                    |          
+ Jiujiang Lushan Airport                             | CN      | Jiujiang                   |          
+ Nanyang Airport                                     | CN      | Nanyang                    |          
+ Changde Airport                                     | CN      | Changde                    |          
+ Mianyang Airport                                    | CN      | Mianyang                   |          
+ Nanchong Airport                                    | CN      | Nanchong                   |          
+ Chifeng Airport                                     | CN      | Chifeng                    |          
+ Changzhi Airport                                    | CN      | Changzhi                   |          
+ Weifang Airport                                     | CN      | Weifang                    |          
+ Nantong Airport                                     | CN      | Nantong                    |          
+ El Alto Intl                                        | BOL     | La Paz                     |      4063
+ Lhasa-Gonggar                                       | CN      | Lhasa                      |      4005
+ Juliaca                                             | PE      | Juliaca                    |      3827
+ Teniente Alejandro Velasco Astete Intl              | PE      | Cusco                      |      3311
+ Juana Azurduy De Padilla                            | BOL     | Sucre                      |      2905
+ Mariscal Sucre Intl                                 | EC      | Quito                      |      2813
+ Coronel Fap Alfredo Mendivil Duarte                 | PE      | Ayacucho                   |      2719
+ Mayor General FAP Armando Revoredo Iglesias Airport | PE      | Cajamarca                  |      2677
+ Licenciado Adolfo Lopez Mateos Intl                 | MEX     | Toluca                     |      2581
+ Rodriguez Ballon                                    | PE      | Arequipa                   |      2563
+ Eldorado Intl                                       | CO      | Bogotá                     |      2549
+ Jorge Wilsterman                                    | BOL     | Cochabamba                 |      2549
+ Mariscal Lamar                                      | EC      | Cuenca                     |      2532
+
+ </pre>
+ <p>  
+Not good! With numerical columns Postgres defaults to putting the nulls before the highest numbers. It has to do something with them, otherwise we would never know that we are missing data for certain rows. In this case they are missing a whole lot of elevation data specifically for China which is a big flaw if you care about elevation. But for our investigation's sake, we just push the nulls to the end using <span class="hlite"> NULLS LAST</span>.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, province, elevation FROM airport ORDER BY elevation DESC NULLS LAST;
+                        name                         | country |            city            |                 province                 | elevation 
+-----------------------------------------------------+---------+----------------------------+------------------------------------------+-----------
+ El Alto Intl                                        | BOL     | La Paz                     | La Paz                                   |      4063
+ Lhasa-Gonggar                                       | CN      | Lhasa                      | Xizang                                   |      4005
+ Yushu Batang                                        | CN      | Yushu                      | Qinghai                                  |      3963
+ Juliaca                                             | PE      | Juliaca                    | Puno                                     |      3827
+ Teniente Alejandro Velasco Astete Intl              | PE      | Cusco                      | Cusco                                    |      3311
+ Juana Azurduy De Padilla                            | BOL     | Sucre                      | Chuquisaca                               |      2905
+ Mariscal Sucre Intl                                 | EC      | Quito                      | Ecuador                                  |      2813
+ Coronel Fap Alfredo Mendivil Duarte                 | PE      | Ayacucho                   | Ayacucho                                 |      2719
+ Mayor General FAP Armando Revoredo Iglesias Airport | PE      | Cajamarca                  | Cajamarca                                |      2677
+ Licenciado Adolfo Lopez Mateos Intl                 | MEX     | Toluca                     | México, Estado de                        |      2581
+ Rodriguez Ballon                                    | PE      | Arequipa                   | Arequipa                                 |      2563
+ Jorge Wilsterman                                    | BOL     | Cochabamba                 | Cochabamba                               |      2549
+ Eldorado Intl                                       | CO      | Bogotá                     | Santa Fe de Bogotá                       |      2549
+ Mariscal Lamar                                      | EC      | Cuenca                     | Ecuador                                  |      2532
+ Asmara Intl                                         | ER      | Asmara                     | Eritrea                                  |      2336
+ Bole Intl                                           | ETH     | Addis Ababa                | Addis Ababa                              |      2334
+ Hermanos Serdan Intl                                | MEX     | Puebla                     | Puebla                                   |      2244
+ Paro                                                | BHT     | Thimphu                    | Bhutan                                   |      2235
+ Licenciado Benito Juarez Intl                       | MEX     | Ciudad de México           | Distrito Federal                         |      2230
+ Sanaa Intl                                          | YE      | Sanaa                      | Yemen                                    |      2200
+ General Leobardo C Ruiz Intl                        | MEX     | Zacatecas                  | Zacatecas                                |      2177
+ Xining Caojiabao Airport                            | CN      | Xining                     | Qinghai                                  |      2170
+ Eldoret Intl                                        | EAK     | Eldoret                    | Kenya                                    |      2116
+ La Nubia                                            | CO      | Manizales                  | Caldas                                   |      2095
+ Gondar                                              | ETH     | Gondar                     | Amhara                                   |      1994
+ Lanzhou Airport                                     | CN      | Lanzhou                    | Gansu                                    |      1948
+ Santa Fe Muni                                       | USA     | Santa Fe                   | New Mexico                               |      1935
+ Queretaro Intercontinental                          | MEX     | Querétaro                  | Querétaro                                |      1920
+ Wujiaba                                             | CN      | Kunming                    | Yunnan                                   |      1895
+ City Of Colorado Springs Muni                       | USA     | Colorado Springs           | Colorado                                 |      1886
+ Cheyenne Rgnl Jerry Olson Fld                       | USA     | Cheyenne                   | Wyoming                                  |      1877
+ Jesus Teran Intl                                    | MEX     | Aguascalientes             | Aguascalientes                           |      1863
+ Durango Intl                                        | MEX     | Durango                    | Durango                                  |      1861
+ Capitan Oriel Lea Plaza                             | BOL     | Tarija                     | Tarija                                   |      1855
+ Alferez Fap David Figueroa Fernandini Airport       | PE      | Huánuco                    | Huánuco                                  |      1851
+
+ </pre>
+ <p>  
+Next I did completely arbitrary conditional to get cities with elevations between 1000 and 2000 ft. Just so you could see the <span class="hlite">AND</span> extension of WHERE.</p><pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, elevation FROM airport WHERE elevation > 1000 AND elevation < 2000 ORDER BY elevation;
+                     name                      | country |        city         | elevation 
+-----------------------------------------------+---------+---------------------+-----------
+ Lubbock Preston Smith Intl                    | USA     | Lubbock             |      1001
+ Tobias Bolanos International Airport          | CR      | San José            |      1002
+ Toncontin Intl                                | HN      | Tegucigalpa         |      1004
+ Sir Seretse Khama Intl                        | RB      | Gaborone            |      1006
+ Livingstone                                   | Z       | Livingstone         |      1007
+ Imam Khomeini                                 | IR      | Tehran              |      1008
+ Baotou Airport                                | CN      | Baotou              |      1013
+ Hail                                          | SA      | Hail                |      1016
+ Ain Arnat Airport                             | DZ      | Sétif               |      1024
+ Konya                                         | TR      | Konya               |      1031
+ Datong Airport                                | CN      | Datong              |      1049
+ Erkilet                                       | TR      | Kayseri             |      1056
+ Presidente Juscelino Kubitschek               | BR      | Brasília            |      1061
+ Calgary Intl                                  | CDN     | Calgary             |      1084
+ Baita Airport                                 | CN      | Hohhot              |      1084
+ Ondjiva Pereira Airport                       | ANG     | Ngiva               |      1087
+ Yinchuan                                      | CN      | Yinchuan            |      1098
+ Rick Husband Amarillo Intl                    | USA     | Amarillo            |      1100
+ Billings Logan International Airport          | USA     | Billings            |      1113
+ Torreon Intl                                  | MEX     | Torreón             |      1124
+ Longdongbao                                   | CN      | Guiyang             |      1139
+ Mwanza                                        | EAT     | Mwanza              |      1147
+ Lusaka Intl                                   | Z       | Lusaka              |      1152
+ Erzincan                                      | TR      | Erzincan            |      1153
+ Entebbe Intl                                  | EAU     | Kampala             |      1153
+ Kisumu                                        | EAK     | Kisumu              |      1157
+ Aksu Airport                                  | CN      | Aksu                |      1163
+ Dire Dawa Intl                                | ETH     | Dire Dawa           |      1167
+ Helena Rgnl                                   | USA     | Helena              |      1182
+ Palonegro                                     | CO      | Bucaramanga         |      1188
+ Kimberley                                     | RSA     | Kimberley           |      1204
+ El Paso Intl                                  | USA     | El Paso             |      1207
+ El Eden                                       | CO      | Armenia             |      1216
+ Kamuzu Intl                                   | MW      | Lilongwe            |      1230
+ Salta                                         | RA      | Salta               |      1246
+ Mus Airport                                   | TR      | Mus                 |      1267
+ Ndola                                         | Z       | Ndola               |      1270
+ Ivato                                         | RM      | Antananarivo        |      1280
+ Salt Lake City Intl                           | USA     | Salt Lake City      |      1289
+ Yakubu Gowon                                  | NGR     | Jos                 |      1290
+ Lubumbashi Intl                               | CGO     | Lubumbashi          |      1309
+ Pietersburg                                   | RSA     | Polokwane           |      1327
+ J M Nkomo Intl                                | ZW      | Bulawayo            |      1329
+ Chinggis Khaan Intl                           | MNG     | Ulaanbaatar         |      1330
+ Tribhuvan Intl                                | NEP     | Kathmandu           |      1338
+ Matecana                                      | CO      | Pereira             |      1346
+ Reno Tahoe Intl                               | USA     | Reno                |      1346
+ Tabriz Intl                                   | IR      | Tabriz              |      1359
+ Bloemfontein Intl                             | RSA     | Mangaung            |      1359
+ General R Fierro Villalobos Intl              | MEX     | Chihuahua           |      1360
+ Menongue                                      | ANG     | Menongue            |      1363
+ Lichinga                                      | MOC     | Lichinga            |      1373
+ Tamanrasset                                   | DZ      | Tamanrasset         |      1377
+ Lanseria                                      | RSA     | Johannesburg        |      1377
+ Kashi                                         | CN      | Kashgar             |      1381
+ Arusha                                        | EAT     | Arusha              |      1387
+ Plan De Guadalupe Intl                        | MEX     | Saltillo            |      1457
+ Taiz Intl                                     | YE      | Taizz               |      1475
+ Taif                                          | SA      | At Taif             |      1478
+ Kigali Intl                                   | RWA     | Kigali              |      1481
+ Harare Intl                                   | ZW      | Harare              |      1490
+ Shiraz Shahid Dastghaib Intl                  | IR      | Shiraz              |      1500
+ Olaya Herrera                                 | CO      | Medellín            |      1506
+ La Aurora                                     | GCA     | Ciudad de Guatemala |      1510
+ Xoxocotlan Intl                               | MEX     | Oaxaca              |      1521
+ Don Miguel Hidalgo Y Costilla Intl            | MEX     | Guadalajara         |      1529
+ Esfahan Shahid Beheshti Intl                  | IR      | Esfahan             |      1542
+ Sivas                                         | TR      | Sivas               |      1596
+ Licenciado Y Gen Ignacio Lopez Rayon          | MEX     | Uruapan             |      1603
+ Quetta                                        | PK      | Quetta              |      1606
+ Jomo Kenyatta International                   | EAK     | Nairobi             |      1624
+ Moshoeshoe I Intl                             | LS      | Maseru              |      1630
+ Albuquerque International Sunport             | USA     | Albuquerque         |      1633
+ Srinagar                                      | IND     | Srinagar            |      1655
+ Denver Intl                                   | USA     | Denver              |      1656
+ Agri Airport                                  | TR      | Agri                |      1665
+ Van                                           | TR      | Van                 |      1671
+ Nairobi Wilson                                | EAK     | Nairobi             |      1691
+ Johannesburg Intl                             | RSA     | Johannesburg        |      1695
+ Huambo                                        | ANG     | Huambo              |      1703
+ Windhoek Hosea Kutako International Airport   | NAM     | Windhoek            |      1720
+ Erzurum                                       | TR      | Erzurum             |      1757
+ Lubango                                       | ANG     | Lubango             |      1762
+ Kabul Intl                                    | AFG     | Kabul               |      1792
+ Kars Airport                                  | TR      | Kars                |      1795
+ General Francisco J Mujica Intl               | MEX     | Morelia             |      1839
+ Ponciano Arriaga Intl                         | MEX     | San Luis Potosí     |      1840
+ Alferez Fap David Figueroa Fernandini Airport | PE      | Huánuco             |      1851
+ Capitan Oriel Lea Plaza                       | BOL     | Tarija              |      1855
+ Durango Intl                                  | MEX     | Durango             |      1861
+ Jesus Teran Intl                              | MEX     | Aguascalientes      |      1863
+
+  </pre>
+  
+<p>  
+This is the exact same thing, but uses <span class="hlite">BETWEEN</span>.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, elevation FROM airport WHERE elevation BETWEEN 1000 AND 2000 ORDER BY elevation;
+                     name                      | country |        city         | elevation 
+-----------------------------------------------+---------+---------------------+-----------
+ Lubbock Preston Smith Intl                    | USA     | Lubbock             |      1001
+ Tobias Bolanos International Airport          | CR      | San José            |      1002
+ Toncontin Intl                                | HN      | Tegucigalpa         |      1004
+ Sir Seretse Khama Intl                        | RB      | Gaborone            |      1006
+ Livingstone                                   | Z       | Livingstone         |      1007
+ Imam Khomeini                                 | IR      | Tehran              |      1008
+ Baotou Airport                                | CN      | Baotou              |      1013
+ Hail                                          | SA      | Hail                |      1016
+ Ain Arnat Airport                             | DZ      | Sétif               |      1024
+ Konya                                         | TR      | Konya               |      1031
+ Datong Airport                                | CN      | Datong              |      1049
+ Erkilet                                       | TR      | Kayseri             |      1056
+ Presidente Juscelino Kubitschek               | BR      | Brasília            |      1061
+ Calgary Intl                                  | CDN     | Calgary             |      1084
+ Baita Airport                                 | CN      | Hohhot              |      1084
+ Ondjiva Pereira Airport                       | ANG     | Ngiva               |      1087
+ Yinchuan                                      | CN      | Yinchuan            |      1098
+ Rick Husband Amarillo Intl                    | USA     | Amarillo            |      1100
+ Billings Logan International Airport          | USA     | Billings            |      1113
+ Torreon Intl                                  | MEX     | Torreón             |      1124
+ Longdongbao                                   | CN      | Guiyang             |      1139
+ Mwanza                                        | EAT     | Mwanza              |      1147
+ Lusaka Intl                                   | Z       | Lusaka              |      1152
+ Erzincan                                      | TR      | Erzincan            |      1153
+ Entebbe Intl                                  | EAU     | Kampala             |      1153
+ Kisumu                                        | EAK     | Kisumu              |      1157
+ Aksu Airport                                  | CN      | Aksu                |      1163
+ Dire Dawa Intl                                | ETH     | Dire Dawa           |      1167
+ Helena Rgnl                                   | USA     | Helena              |      1182
+ Palonegro                                     | CO      | Bucaramanga         |      1188
+ Kimberley                                     | RSA     | Kimberley           |      1204
+</pre>
+<p> then I just quickly demoed the  <span class="hlite"> IN()</span> conditional for <span class="hlite"> WHERE </span>
+</p> <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, elevation FROM airport WHERE elevation IN(1007,1013,1049)  ORDER BY elevation;
+      name      | country |    city     | elevation 
+----------------+---------+-------------+-----------
+ Livingstone    | Z       | Livingstone |      1007
+ Baotou Airport | CN      | Baotou      |      1013
+ Datong Airport | CN      | Datong      |      1049
+(3 rows)
+
+</pre>
+
+<p>And in keeping with all of the fun options for <span class="hlite">WHERE</span>, I showed you <span class="hlite">LIKE()</span> which uses regular expressions/pattern matching.
+</p> <pre class="PROGRAMLISTING">
+mondial=# SELECT name, country, city, province, elevation FROM airport WHERE province LIKE('K%')  ORDER BY elevation;
+                  name                   | country |           city           |         province          | elevation 
+-----------------------------------------+---------+--------------------------+---------------------------+-----------
+ Cochin                                  | IND     | Kochi                    | Kerala                    |         2
+ Supadio                                 | RI      | Pontianak                | Kalimantan Barat          |         3
+ Bonriki Intl                            | KIR     | Tarawa                   | Kiribati                  |         3
+ Sepinggan                               | RI      | Balikpapan               | Kalimantan Timur          |         4
+ Thiruvananthapuram Intl                 | IND     | Trivandrum               | Kerala                    |         5
+ Kalmar                                  | S       | Kalmar                   | Kalmar                    |         5
+ Sultan Ismail Petra                     | MAL     | Kota Bahru               | Kelantan                  |         5
+ Abadan                                  | IR      | Abadan                   | Khuzestan                 |         6
+ Makedonia                               | GR      | Thessaloniki             | Kentrikis Makedonias      |         7
+ Durban Intl                             | RSA     | eThekwini                | KwaZulu-Natal             |        10
+ Khrabrovo                               | R       | Kaliningrad              | Kaliningradskaya          |        13
+ Kochi                                   | J       | Kochi                    | Kochi                     |        13
+ Syamsudin Noor                          | RI      | Bandjarmasin             | Kalimantan Selatan        |        20
+ Ahwaz                                   | IR      | Ahvaz                    | Khuzestan                 |        20
+ Kuala Lumpur Intl                       | MAL     | Kuala Lumpur             | Kuala Lumpur              |        21
+ Malindi Airport                         | EAK     | Malindi                  | Kenya                     |        24
+ Tjilik Riwut                            | RI      | Palangkaraya             | Kalimantan Tengah         |        25
+ Sochi                                   | R       | Sochi                    | Krasnodarskiy             |        27
+ Sultan Abdul Aziz Shah Intl             | MAL     | Kuala Lumpur             | Kuala Lumpur              |        27
+ Depati Amir                             | RI      | Pangkal Pinang           | Kepulauan Bangka Belitung |        33
+ Nikos Kazantzakis                       | GR      | Iraklio                  | Kritis                    |        35
+ Pashkovskiy                             | R       | Krasnodar                | Krasnodarskiy             |        36
+ Hang Nadim                              | RI      | Batam                    | Kepulauan Riau            |        38
+ Yelizovo                                | R       | Petropavlovsk-Kamčatskij | Kamchatka                 |        40
+ Petrozavodsk Airport                    | R       | Petrozavodsk             | Karelia                   |        46
+ Mombasa Moi Intl                        | EAK     | Mombasa                  | Kenya                     |        61
+ Kuwait Intl                             | KWT     | Al Kuwayt                | Kuwait                    |        63
+ Bydgoszcz Ignacy Jan Paderewski Airport | PL      | Bydgoszcz                | Kujawsko-Pomorskie        |        72
+ Khabarovsk Novy                         | R       | Khabarovsk               | Khabarovskiy              |        74
+ Syktyvkar                               | R       | Syktyvkar                | Komi                      |       104
+ Calicut                                 | IND     | Kozhikode                | Kerala                    |       104
+
+</pre>
+
+<p>  
+We jumped into the <i>city</i> table for some <b>aggregate queries</b></P>
+ <pre class="PROGRAMLISTING">
+mondial=# \d city
+                         Table "public.city"
+   Column   |         Type          | Collation | Nullable | Default 
+------------+-----------------------+-----------+----------+---------
+ name       | character varying(50) |           | not null | 
+ country    | character varying(4)  |           | not null | 
+ province   | character varying(50) |           | not null | 
+ population | numeric               |           |          | 
+ latitude   | numeric               |           |          | 
+ longitude  | numeric               |           |          | 
+ elevation  | numeric               |           |          | 
+Indexes:
+    "citykey" PRIMARY KEY, btree (name, country, province)
+Check constraints:
+    "citylat" CHECK (latitude >= '-90'::integer::numeric AND latitude <= 90::numeric)
+    "citylon" CHECK (longitude >= '-180'::integer::numeric AND longitude <= 180::numeric)
+    "citypop" CHECK (population >= 0::numeric)
+
+
+mondial=# SELECT * FROM city;
+                name                 | country |                 province                 | population | latitude | longitude | elevation 
+-------------------------------------+---------+------------------------------------------+------------+----------+-----------+-----------
+ Tirana                              | AL      | Albania                                  |     418495 |    41.33 |     19.82 |       110
+ Shkodër                             | AL      | Albania                                  |      77075 |    42.07 |      19.5 |        13
+ Durrës                              | AL      | Albania                                  |     113249 |    41.32 |     19.45 |        40
+ Vlorë                               | AL      | Albania                                  |      79513 |    40.47 |     19.49 |        25
+ Elbasan                             | AL      | Albania                                  |      78703 |     41.1 |     20.07 |       150
+ Korçë                               | AL      | Albania                                  |      51152 |    40.62 |     20.77 |       850
+ Komotini                            | GR      | Anatolikis Makedonias kai Thrakis        |            |     41.1 |     25.42 |        45
+ Kavala                              | GR      | Anatolikis Makedonias kai Thrakis        |      58790 |    40.93 |      24.4 |        20
+ Athina                              | GR      | Attikis                                  |     664046 |    37.97 |     23.72 |        70
+ Peiraias                            | GR      | Attikis                                  |     163688 |    37.95 |     23.63 |        10
+ Peristeri                           | GR      | Attikis                                  |     139981 |    38.02 |     23.68 |        50
+ Acharnes                            | GR      | Attikis                                  |     106943 |    38.08 |     23.73 |       186
+ Patra                               | GR      | Dytikis Elladas                          |     213984 |    38.25 |     21.73 |        10
+ Kozani                              | GR      | Dytikis Makedonias                       |            |     40.3 |     21.78 |       710
+ Kerkyra                             | GR      | Ionion Nison                             |            |    39.58 |     19.87 |        20
+ Ioannina                            | GR      | Ipeiroy                                  |     112486 |    39.67 |     20.85 |       480
+ Thessaloniki                        | GR      | Kentrikis Makedonias                     |     325182 |    40.65 |      22.9 |         5
+ Iraklio                             | GR      | Kritis                                   |     173993 |    35.33 |     25.13 |        10
+ Chania                              | GR      | Kritis                                   |     108642 |    35.52 |     24.02 |        20
+ Ermoupoli                           | GR      | Notioy Aigaioy                           |            |    37.43 |     24.92 |        20
+ Rhodes                              | GR      | Notioy Aigaioy                           |     115490 |    36.43 |     28.22 |        26
+ Tripoli                             | GR      | Peloponnisos                             |            |    37.52 |     22.38 |       655
+ Lamia                               | GR      | Stereas Elladas                          |      75315 |     38.9 |     22.43 |        50
+ Chalkida                            | GR      | Stereas Elladas                          |     102223 |    38.47 |      23.6 |         5
+ Larissa                             | GR      | Thessalias                               |     162591 |    39.64 |     22.42 |        67
+ Volos                               | GR      | Thessalias                               |     144449 |    39.37 |     22.93 |         5
+ Mytilini                            | GR      | Boreioy Aigaioy                          |            |     39.1 |     26.55 |         8
+ Karyes                              | GR      | Aghion Oros                              |        233 |    40.26 |     24.24 |       370
+ Nicosia                             | CY      | Cyprus                                   |      55014 |    35.17 |     33.37 |       220
+ Larnaka                             | CY      | Cyprus                                   |      51468 |    34.92 |     33.63 |        10
+ Lemesos                             | CY      | Cyprus                                   |     101000 |    34.67 |     33.03 |          
+
+</pre>
+
+<p>  
+We began by using <span class="hlite"> GROUP BY </span> and <span class="hlite"> COUNT() </span> to make an aggregate query that counts up each unique country in the 'city' table. Aggregate queries, by definition, use the <span class="hlite"> GROUP BY </span> parameter. You can't aggregate without deciding what you are aggregating on (what <i>column</i> are grouping by). We are aggregating countries. In the table above AL appeared 6 times (in 6 rows). In this query, because it is an aggregate query, there is one row per country along with a number of times that country appears in the 'city' table. <span class="hlite"> COUNT() </span> is one method of aggregating: it counts up unique values. The resulting table has 245 rows, one for every unique country in the city table. It displays the number of times it appears and the country code.</P>
+ <pre class="PROGRAMLISTING">
+SELECT count(country), country FROM city GROUP BY country;
+ count | country 
+-------+---------
+    19 | KP
+    12 | DK
+     4 | UAE
+    16 | SN
+     1 | PN
+    21 | N
+    13 | CZ
+     1 | BS
+     5 | NEP
+     2 | RCA
+     1 | MH
+     1 | WV
+    18 | VN
+     1 | NF
+     1 | KOS
+    39 | RA
+   208 | BR
+     1 | V
+    40 | PL
+     1 | FALK
+     1 | VU
+    19 | ANG
+     2 | MC
+     1 | SVA
+    35 | YV
+     1 | SGP
+     1 | TT
+     2 | ROU
+    22 | MAL
+   180 | R
+     1 | NU</pre>
+<p>  
+Then we used <span class="hlite"> ORDER BY </span> to see the countries that have the most cities in them (within this database). Notice that we are ordering using that special aggregate column count(country). </P>
+ <pre class="PROGRAMLISTING">
+ mondial=# SELECT count(country), country FROM city GROUP BY country ORDER BY count(country) DESC;
+ count | country 
+-------+---------
+   302 | CN
+   252 | USA
+   210 | BR
+   171 | R
+    99 | IND
+    88 | TR
+    85 | D
+    84 | GB
+    83 | MEX
+    72 | J
+    69 | RP
+    65 | E
+    58 | NGR
+    58 | RI
+    56 | I
+    52 | CO
+    50 | IR
+    42 | RO
+    41 | F
+    41 | PL
+    39 | RA
+    38 | CDN
+    38 | UA
+    35 | PK
+    35 | YV
+    33 | CGO
+    31 | PE
+    30 | S
+    29 | EAT
+    29 | CH
+    28 | NL
+    25 | ET
+    25 | HN
+    24 | P
+    23 | ROK
+
+ 
+ </pre><p>  
+Then, I messed up!! I specified "city" as a column instead of "name" (the name of the city). "city" is not a column it is the table. It's not uncommon to do this by mistake. But here's what happens, if you specify the table, it gives you the entire row in essentially array like format. </P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT count(city), city FROM city GROUP BY city ORDER BY count(city) DESC;
+ count |                                      city                                       
+-------+---------------------------------------------------------------------------------
+     1 | ("Catia La Mar",YV,Vargas,118466,10.6,-67.03,)
+     1 | ("Can Tho",VN,"Mekong River Delta",812088,10.03,105.78,0.5)
+     1 | (Batajsk,R,Rostovskaya,126988,47.17,39.73,5)
+     1 | ("Aparecida de Goiânia",BR,Goiás,455193,-16.82,-49.23,808)
+     1 | (Jingzhou,CN,Hubei,950215,30.32,112.25,)
+     1 | ("Shubra al Khimah",ET,Egypt,1187747,30.13,31.24,16)
+     1 | (Molenbeek-Saint-Jean,B,Bruxelles,97979,50.85,4.33,)
+     1 | (Wiawso,GH,"Western North",,6.21,-2.59,60)
+     1 | (Lodja,CGO,Sankuru,,-3.52,24.00,500)
+     1 | (Otsu,J,Shiga,340973,35.02,135.85,)
+     1 | ("Chon Buri",THA,Thailand,321149,13.36,100.98,)
+     1 | (Reno,USA,Nevada,264165,39.53,-119.82,1374)
+     1 | (Roxas,RP,"Western Visayas",167003,11.58,122.75,)
+     1 | (Jacksonville,USA,Florida,949611,30.34,-81.66,5)
+     1 | (Nicosia,CY,Cyprus,55014,35.17,33.37,220)
+     1 | (Columbia,USA,"South Carolina",136632,34.03,-80.9,89)
+     1 | (Leshan,CN,Sichuan,802817,29.57,103.77,)
+     1 | (Ensenada,MEX,"Baja California",330652,31.86,-116.61,16)
+     1 | ("San Pedro Sula",HN,Cortés,598519,15.5,-88.03,83)
+     1 | (Memphis,USA,Tennessee,633104,35.12,-89.97,103)
+     1 | (Okara,PK,Punjab,357935,30.81,73.45,105)
+     1 | (Malang,RI,"Jawa Timur",820243,-7.98,112.62,476)
+     1 | (Exeter,GB,"South West England",124893,50.72,-3.53,)
+     1 | (Kyïv,UA,Kyïv,2962180,50.45,30.52,179)
+     1 | (Tahoua,RN,Tahoua,149498,14.88,5.27,389)
+     1 | (Liestal,CH,Basel-Landschaft,,47.47,7.73,327)
+     1 | ("Ciudad de Guatemala",GCA,Guatemala,923392,14.61,-90.54,1500)
+     1 | (Malabo,GQ,Insular,257000,3.75,8.77,30)
+     1 | (Enschede,NL,Overijssel,158494,52.22,6.9,42)
+     1 | (Chongqing,CN,Chongqing,9580770,29.56,106.57,237)
+     1 | (Luzern,CH,Luzern,82620,47.05,8.3,436)
+
+ </pre>
+ 
+ 
+  <p>  
+Here I corrected my query. And Addie created by name. This is how <span class="hlite"> COUNT() </span> works to aggregate.</P> this is grouping every row by the roads that share the exact same city name.
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT count(name), name FROM city GROUP BY name ORDER BY count(name) DESC;
+ count |                name                 
+-------+-------------------------------------
+     4 | Victoria
+     3 | Valencia
+     3 | San Juan
+     3 | Santa Rosa
+     3 | La Paz
+     3 | Córdoba
+     3 | Springfield
+     3 | Santiago
+     3 | Toledo
+     3 | San Fernando
+     3 | León
+     3 | Trujillo
+     3 | Hamilton
+     3 | Richmond
+     2 | Manchester
+     2 | Worcester
+     2 | Kansas City
+     2 | London
+     2 | Colombo
+     2 | Santa Fe
+     2 | Kochi
+     2 | Suzhou
+     2 | Hyderabad
+     2 | Augusta
+     2 | Cartago
+     2 | Cartagena
+     2 | Mérida
+     2 | Arlington
+     2 | Alexandria
+     2 | Lincoln
+     2 | San Carlos
+</pre>
+  <p>  
+To demo what is happening here, I did a simple query for cities named Victoria. And returned the four rows of the cities named Victoria from four different countries.
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM city WHERE name = 'Victoria';
+   name   | country |     province     | population | latitude | longitude | elevation 
+----------+---------+------------------+------------+----------+-----------+-----------
+ Victoria | M       | Malta            |       7242 |    36.04 |     14.24 |          
+ Victoria | HK      | Hong Kong        |     923028 |    22.28 |    114.15 |          
+ Victoria | SY      | Seychelles       |      24087 |    -4.62 |     55.45 |        10
+ Victoria | CDN     | British Columbia |            |    48.43 |   -123.37 |        23
+(4 rows)
+
+</pre>
+
+<p>  
+Importantly, I then introduced <span class="hlite"> HAVING </span> which is a conditional parameter--it tests and filters values. It uses the same conditional operations (AND, OR, IN(), etc) as WHERE. But instead of WHERE, which tests and filters values from the original table, HAVING filters the resulting aggregate table after the aggregation (grouping, counting/avg/sum) is done. This shows us countries that have more than 50 cities in the database.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT count(country), country FROM city GROUP BY country HAVING count(country) > 50 ORDER BY count(country) DESC;
+ count | country 
+-------+---------
+   258 | USA
+   208 | BR
+   191 | CN
+   180 | R
+   103 | TR
+    99 | IND
+    87 | GB
+    86 | MEX
+    85 | D
+    72 | J
+    69 | RP
+    66 | E
+    58 | NGR
+    58 | RI
+    56 | I
+(15 rows)
+
+</pre><p>  
+Show how does aggregation is working I ended a simple query for cities in the country 'I' (Italy). These are the 56 rows that are aggregated into one row using GROUP BY.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM city WHERE country = 'I';
+         name          | country |       province        | population | latitude | longitude | elevation 
+-----------------------+---------+-----------------------+------------+----------+-----------+-----------
+ Novara                | I       | Piemonte              |     101952 |    45.45 |      8.62 |       162
+ Torino                | I       | Piemonte              |     872367 |    45.07 |       7.7 |       239
+ Aosta                 | I       | Valle d'Aosta         |      34102 |    45.73 |      7.32 |       583
+ Bérgamo               | I       | Lombardia             |     115349 |     45.7 |      9.67 |       249
+ Bréscia               | I       | Lombardia             |     189902 |    45.54 |     10.22 |       149
+ Milano                | I       | Lombardia             |    1242123 |    45.47 |      9.18 |       120
+ Monza                 | I       | Lombardia             |     119856 |    45.58 |      9.27 |       162
+ Bolzano               | I       | Trentino-Alto Adige   |     102575 |     46.5 |     11.35 |       262
+ Trento                | I       | Trentino-Alto Adige   |     114198 |    46.07 |     11.12 |       190
+ Pádova                | I       | Veneto                |     206192 |    45.42 |     11.87 |        12
+ Verona                | I       | Veneto                |     252520 |    45.43 |     10.98 |        59
+ Vicenza               | I       | Veneto                |     111500 |    45.55 |     11.55 |        39
+ Venézia               | I       | Veneto                |     261362 |    45.44 |     12.34 |         1
+ Trieste               | I       | Friuli-Venezia Giulia |     202123 |    45.63 |      13.8 |         2
+ La Spezia             | I       | Liguria               |      92659 |     44.1 |      9.82 |        10
+ Génova                | I       | Liguria               |     586180 |    44.41 |      8.93 |        20
+ Bologna               | I       | Emilia-Romagna        |     371337 |    44.51 |     11.35 |        54
+ Ferrara               | I       | Emilia-Romagna        |     132545 |    44.83 |     11.62 |         9
+ Forlí                 | I       | Emilia-Romagna        |     116434 |    44.23 |     12.05 |        34
+ Módena                | I       | Emilia-Romagna        |     179149 |    44.65 |     10.93 |        34
+ Parma                 | I       | Emilia-Romagna        |     175895 |     44.8 |     10.33 |        55
+ Piacenza              | I       | Emilia-Romagna        |     100311 |    45.05 |       9.7 |        61
+ Ravenna               | I       | Emilia-Romagna        |     153740 |    44.42 |      12.2 |         4
+ Reggio nell'Emilia    | I       | Emilia-Romagna        |     162082 |     44.7 |     10.63 |        58
+ Rímini                | I       | Emilia-Romagna        |     139601 |    44.05 |     12.57 |         6
+ Livorno               | I       | Toscana               |     157052 |    43.55 |     10.32 |         3
+ Pisa                  | I       | Toscana               |      85858 |    43.72 |      10.4 |         4
+ Firenze               | I       | Toscana               |     358079 |    43.78 |     11.25 |        50
+ Prato                 | I       | Toscana               |     185456 |    43.88 |      11.1 |        65
+ Perúgia               | I       | Umbria                |     162449 |    43.11 |     12.39 |       493
+ Terni                 | I       | Umbria                |     109193 |    42.57 |     12.65 |       130
+ Ancona                | I       | Marche                |     100497 |    43.62 |     13.52 |        16
+ Roma                  | I       | Lazio                 |    2617175 |    41.88 |     12.43 |        21
+ Latina                | I       | Lazio                 |     117892 |    41.47 |      12.9 |        21
+ Pescara               | I       | Abruzzo               |     117166 |    42.46 |     14.21 |         4
+ L'Aquila              | I       | Abruzzo               |      66964 |    42.35 |      13.4 |       714
+ Campobasso            | I       | Molise                |      48747 |    41.57 |     14.67 |       701
+ Salerno               | I       | Campania              |     132608 |    40.68 |     14.77 |         4
+ Nápoli                | I       | Campania              |     962003 |    40.83 |     14.25 |        17
+ Torre del Greco       | I       | Campania              |      85922 |    40.78 |     14.37 |          
+ Giugliano in Campania | I       | Campania              |     108793 |    40.93 |      14.2 |          
+ Bari                  | I       | Puglia                |     315933 |    41.13 |     16.87 |         5
+ Fóggia                | I       | Puglia                |     147036 |    41.46 |     15.55 |        76
+ Lecce                 | I       | Puglia                |      89916 |    40.35 |     18.17 |        49
+ Andria                | I       | Puglia                |     100052 |    41.22 |      16.3 |       151
+ Táranto               | I       | Puglia                |     200154 |    40.47 |     17.23 |        15
+ Potenza               | I       | Basilicata            |      66777 |    40.63 |      15.8 |       819
+ Catanzaro             | I       | Calabria              |      89364 |     38.9 |      16.6 |       342
+ Cosenza               | I       | Calabria              |      69484 |     39.3 |     16.25 |       238
+ Réggio di Calabria    | I       | Calabria              |     180817 |    38.11 |     15.66 |        31
+ Palermo               | I       | Sicilia               |     657561 |    38.12 |     13.37 |        14
+ Messina               | I       | Sicilia               |     243262 |    38.18 |     15.55 |         3
+ Catánia               | I       | Sicilia               |     293902 |     37.5 |     15.09 |         7
+ Siracusa              | I       | Sicilia               |     118385 |    37.08 |     15.28 |        17
+ Cágliari              | I       | Sardegna              |     149883 |    39.25 |      9.05 |         4
+ Sássari               | I       | Sardegna              |     123782 |    40.73 |      8.57 |       225
+(56 rows)
+
+</pre><p>  
+You cannot have <span class="hlite"> HAVING </span> without <span class="hlite"> GROUP BY </span>. HAVING tests/filters that aggregated group.<BR><BR>
+</p>
+
+
+<p>  
+I introduced new aggregate option <span class="hlite"> AVG() </span>, <span class="hlite"> MAX() </span>, and <span class="hlite"> SUM() </span>. Note that we group by country.</P>
+ <pre class="PROGRAMLISTING">
+SELECT count(country), AVG(population), MAX (population), SUM (population), country FROM city GROUP BY country HAVING count(country) > 50 ORDER BY count(country) DESC;
+ count |         avg          |   max    |    sum    | country 
+-------+----------------------+----------+-----------+---------
+   258 |  340708.875968992248 |  8804190 |  87902890 | USA
+   208 |  450419.158653846154 | 11152344 |  93687185 | BR
+   191 | 2467061.780104712042 | 21909814 | 471208800 | CN
+   180 |  425701.483333333333 | 13010112 |  76626267 | R
+   103 |  602849.738636363636 | 15204387 |  53050777 | TR
+    99 | 1621909.475000000000 | 12442373 | 129752758 | IND
+    87 |  314533.045977011494 |  8888608 |  27364375 | GB
+    86 |  630324.220930232558 |  8843706 |  54207883 | MEX
+    85 |  298038.058823529412 |  3292365 |  25333235 | D
+    72 |  788716.690140845070 |  9272740 |  55998885 | J
+    69 |  455677.115942028986 |  2936116 |  31441721 | RP
+    66 |  299457.984126984127 |  3277451 |  18865853 | E
+    58 |  988218.000000000000 | 13745000 |  49410900 | NGR
+    58 |  868390.777777777778 |  9607787 |  46893102 | RI
+    56 |  257111.000000000000 |  2617175 |  14398216 | I
+(15 rows)
+</pre>
+<p>  
+I did a simpler query in order to demo JOINs and also to introduce <span class="hlite"> LIMIT </span> </P>. Here I get the 20 countries with the highest average populations.
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT AVG(population), country FROM city WHERE population > 0 GROUP BY country ORDER BY AVG(population) DESC LIMIT 20;
+         avg          | country 
+----------------------+---------
+ 5685807.000000000000 | SGP
+ 5346726.000000000000 | MW
+ 4464521.000000000000 | KWT
+ 2467061.780104712042 | CN
+ 1715133.333333333333 | JOR
+ 1676478.642857142857 | RSA
+ 1660093.000000000000 | BF
+ 1650000.000000000000 | RL
+ 1621909.475000000000 | IND
+ 1454881.228571428571 | PK
+ 1442430.217391304348 | ROK
+ 1379978.692307692308 | BD
+ 1345145.058823529412 | CGO
+ 1326189.250000000000 | UAE
+ 1257720.000000000000 | AFG
+ 1194935.333333333333 | EAK
+ 1177226.571428571429 | RC
+ 1136956.000000000000 | EC
+ 1083692.000000000000 | DOM
+ 1081744.111111111111 | AUS
+(20 rows)
+</pre>
+
+<p>  
+Finally we are on our way to using <span class="hlite"> JOIN </span> so that we can see the actual names of the countries. But first we want to look at the 'country' table, because that is the only table that contains the full names of the countries.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# \d country
+                       Table "public.country"
+   Column   |         Type          | Collation | Nullable | Default 
+------------+-----------------------+-----------+----------+---------
+ name       | character varying(50) |           | not null | 
+ code       | character varying(4)  |           | not null | 
+ capital    | character varying(50) |           |          | 
+ province   | character varying(50) |           |          | 
+ area       | numeric               |           |          | 
+ population | numeric               |           |          | 
+Indexes:
+    "countrykey" PRIMARY KEY, btree (code)
+    "country_name_key" UNIQUE CONSTRAINT, btree (name)
+Check constraints:
+    "countryarea" CHECK (area >= 0::numeric)
+    "countrypop" CHECK (population >= 0::numeric)
+</pre>
+<p>  
+The <span class="hlite"> key </span> column, the main column we would use to join is country.code (in all the other tables that key is called 'country' (like city.country)). Once we are doing a JOIN it is important to use dot notation (table.column) to specify which table each column is coming from. 
+<BR><BR>
+Here we take our previous aggregate query, but we use <span class="hlite"> JOIN </span> to get the full name of the country: country.name -- NOTE: that JOIN is an extension of the FROM parameter (it is part of FROM). Until now FROM has been very simple because we just want one table. But once you start joining you are making hybrid tables using multiple pre-existing tables. These tables are brought together using <span class="hlite"> ON </span>which matchs values from key columns that are shared across the different tables. <BR><BR>
+It might be helpful to imagine this entire statement: 'FROM city JOIN country ON city.country = country.code' to be the same thing as a single new customized table that you have invented. In fact, I demoed this in class: here is a JOIN for all the columns in the city and country tables, basically it is the city table with 6 more columns: all of the columns from the country table matching to every row by country code. Notice that the six columns from the country table has been tacked on to each row, by the matching country. Now we suddenly have tons of duplicates in those final six columns all you look down the rows, but this join keeps all the information from the city row intact this way.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM city JOIN country ON city.country = country.code;
+                name                 | country |                 province                 | population | latitude | longitude | elevation |               name               | code |       capital        |             province             |   area   | population 
+-------------------------------------+---------+------------------------------------------+------------+----------+-----------+-----------+----------------------------------+------+----------------------+----------------------------------+----------+------------
+ Tirana                              | AL      | Albania                                  |     418495 |    41.33 |     19.82 |       110 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Shkodër                             | AL      | Albania                                  |      77075 |    42.07 |      19.5 |        13 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Durrës                              | AL      | Albania                                  |     113249 |    41.32 |     19.45 |        40 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Vlorë                               | AL      | Albania                                  |      79513 |    40.47 |     19.49 |        25 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Elbasan                             | AL      | Albania                                  |      78703 |     41.1 |     20.07 |       150 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Korçë                               | AL      | Albania                                  |      51152 |    40.62 |     20.77 |       850 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ Komotini                            | GR      | Anatolikis Makedonias kai Thrakis        |            |     41.1 |     25.42 |        45 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Kavala                              | GR      | Anatolikis Makedonias kai Thrakis        |      58790 |    40.93 |      24.4 |        20 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Athina                              | GR      | Attikis                                  |     664046 |    37.97 |     23.72 |        70 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Peiraias                            | GR      | Attikis                                  |     163688 |    37.95 |     23.63 |        10 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Peristeri                           | GR      | Attikis                                  |     139981 |    38.02 |     23.68 |        50 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Acharnes                            | GR      | Attikis                                  |     106943 |    38.08 |     23.73 |       186 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Patra                               | GR      | Dytikis Elladas                          |     213984 |    38.25 |     21.73 |        10 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Kozani                              | GR      | Dytikis Makedonias                       |            |     40.3 |     21.78 |       710 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Kerkyra                             | GR      | Ionion Nison                             |            |    39.58 |     19.87 |        20 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Ioannina                            | GR      | Ipeiroy                                  |     112486 |    39.67 |     20.85 |       480 | Greece                           | GR   | Athina               | Attikis                          |   131940 |   10816286
+ Thessaloniki                        | GR      | Kentrikis Makedonias                     |     325182 |    40.65 |      22.9 |         5 | Greece                           | GR   | Athi:
+
+</pre>
+<p>  
+And finally here is the <span class="hlite"> JOIN </span> of that aggregate query, with the averages of city populations. Imagine that giant table above is now being aggregated, which is exactly what is happening. The two tables are joined so that we can get a new column that has each country's full name. Then when the aggregate query is run, we GROUP on that country name. Also note the dot notation: <span class="hlite"> table.column </span> how we designate which original table the columns are coming from (country or city).</P>
+ <pre class="PROGRAMLISTING">
+mondial=#  SELECT AVG(city.population), country.name 
+ FROM city JOIN country ON city.country = country.code
+ WHERE city.population > 0 
+ GROUP BY country.name 
+ ORDER BY AVG(city.population) DESC LIMIT 20;
+         avg          |         name         
+----------------------+----------------------
+ 5685807.000000000000 | Singapore
+ 5346726.000000000000 | Malawi
+ 4464521.000000000000 | Kuwait
+ 2467061.780104712042 | China
+ 1715133.333333333333 | Jordan
+ 1676478.642857142857 | South Africa
+ 1660093.000000000000 | Burkina Faso
+ 1650000.000000000000 | Lebanon
+ 1621909.475000000000 | India
+ 1454881.228571428571 | Pakistan
+ 1442430.217391304348 | South Korea
+ 1379978.692307692308 | Bangladesh
+ 1345145.058823529412 | Congo, Dem.Rep.
+ 1326189.250000000000 | United Arab Emirates
+ 1257720.000000000000 | Afghanistan
+ 1194935.333333333333 | Kenya
+ 1177226.571428571429 | Taiwan
+ 1136956.000000000000 | Ecuador
+ 1083692.000000000000 | Dominican Republic
+ 1081744.111111111111 | Australia
+(20 rows)
+ </pre>
+ <p>  
+Then I went ahead and did a simpler <span class="hlite"> JOIN </span>, not based on an aggregate query. This is showing us the name column that comes from the country table, and the name column that comes from the city table, along with the two matching columns that we joined on.</P>
+ <pre class="PROGRAMLISTING">
+mondial=#  SELECT country.name, country.code, city.country, city.name
+  FROM city JOIN country ON city.country = country.code
+  WHERE city.country = 'USA';
+     name      | code | country |        name        
+---------------+------+---------+--------------------
+ United States | USA  | USA     | Birmingham
+ United States | USA  | USA     | Mobile
+ United States | USA  | USA     | Montgomery
+ United States | USA  | USA     | Huntsville
+ United States | USA  | USA     | Anchorage
+ United States | USA  | USA     | Juneau
+ United States | USA  | USA     | Phoenix
+ United States | USA  | USA     | Tucson
+ United States | USA  | USA     | Mesa
+ United States | USA  | USA     | Glendale
+ United States | USA  | USA     | Scottsdale
+ United States | USA  | USA     | Tempe
+ United States | USA  | USA     | Chandler
+ United States | USA  | USA     | Peoria
+ United States | USA  | USA     | Gilbert
+ United States | USA  | USA     | Little Rock
+ United States | USA  | USA     | Los Angeles
+ United States | USA  | USA     | San Diego
+ United States | USA  | USA     | San Jose
+ United States | USA  | USA     | San Francisco
+ United States | USA  | USA     | Long Beach
+ United States | USA  | USA     | Fresno
+ United States | USA  | USA     | Sacramento
+ United States | USA  | USA     | Oakland
+ United States | USA  | USA     | Santa Ana
+ United States | USA  | USA     | Anaheim
+ United States | USA  | USA     | Riverside
+ United States | USA  | USA     | Stockton
+ United States | USA  | USA     | Bakersfield
+ United States | USA  | USA     | Huntington Beach
+ United States | USA  | USA     | Fremont
+ United States | USA  | USA     | Glendale
+ United States | USA  | USA     | San Bernardino
+ United States | USA  | USA     | Modesto
+ United States | USA  | USA     | Chula Vista
+ United States | USA  | USA     | Oxnard
+ United States | USA  | USA     | Garden Grove
+ United States | USA  | USA     | Oceanside
+ United States | USA  | USA     | Ontario
+ United States | USA  | USA     | Moreno Valley
+ United States | USA  | USA     | Torrance
+ United States | USA  | USA     | Pomona
+ United States | USA  | USA     | Pasadena
+ United States | USA  | USA     | Irvine
+ United States | USA  | USA     | Sunnyvale
+ United States | USA  | USA     | Santa Clarita
+ United States | USA  | USA     | Santa Rosa
+ United States | USA  | USA     | Hayward
+ United States | USA  | USA     | Fullerton
+ United States | USA  | USA     | Orange
+ United States | USA  | USA     | Rancho Cucamonga
+ United States | USA  | USA     | Escondido
+ United States | USA  | USA     | Lancaster
+ United States | USA  | USA     | Concord
+ United States | USA  | USA     | Thousand Oaks
+ United States | USA  | USA     | Salinas
+ United States | USA  | USA     | Inglewood
+ United States | USA  | USA     | El Monte
+ United States | USA  | USA     | Vallejo
+ United States | USA  | USA     | Simi Valley
+ United States | USA  | USA     | Palmdale
+ United States | USA  | USA     | Fontana
+ United States | USA  | USA     | Berkeley
+ United States | USA  | USA     | West Covina
+ United States | USA  | USA     | Costa Mesa
+ United States | USA  | USA     | Norwalk
+ United States | USA  | USA     | Corona
+ United States | USA  | USA     | Richmond
+ United States | USA  | USA     | Denver
+ United States | USA  | USA     | Colorado Springs
+ United States | USA  | USA     | Aurora
+ United States | USA  | USA     | Lakewood
+ United States | USA  | USA     | Fort Collins
+ United States | USA  | USA     | Bridgeport
+ United States | USA  | USA     | Hartford
+ United States | USA  | USA     | New Haven
+ United States | USA  | USA     | Stamford
+ United States | USA  | USA     | Waterbury
+ United States | USA  | USA     | Dover
+ United States | USA  | USA     | Jacksonville
+ United States | USA  | USA     | Miami
+ United States | USA  | USA     | Tampa
+ United States | USA  | USA     | St. Petersburg
+ United States | USA  | USA     | Hialeah
+ United States | USA  | USA     | Orlando
+ United States | USA  | USA     | Fort Lauderdale
+ United States | USA  | USA     | Tallahassee
+ United States | USA  | USA     | Hollywood
+ United States | USA  | USA     | Coral Springs
+ United States | USA  | USA     | Cape Coral
+ United States | USA  | USA     | Pembroke Pines
+ United States | USA  | USA     | Clearwater
+ United States | USA  | USA     | Port St. Lucie
+ United States | USA  | USA     | Atlanta
+ United States | USA  | USA     | Columbus
+ United States | USA  | USA     | Savannah
+ United States | USA  | USA     | Augusta
+ United States | USA  | USA     | Athens
+ United States | USA  | USA     | Honolulu
+ United States | USA  | USA     | Hilo
+ United States | USA  | USA     | Boise City
+ United States | USA  | USA     | Chicago
+ United States | USA  | USA     | Rockford
+ United States | USA  | USA     | Aurora
+ United States | USA  | USA     | Springfield
+ United States | USA  | USA     | Peoria
+ United States | USA  | USA     | Naperville
+ United States | USA  | USA     | Joliet
+ United States | USA  | USA     | Indianapolis
+ United States | USA  | USA     | Fort Wayne
+ United States | USA  | USA     | Evansville
+ United States | USA  | USA     | South Bend
+ United States | USA  | USA     | Des Moines
+ United States | USA  | USA     | Cedar Rapids
+ United States | USA  | USA     | Wichita
+ United States | USA  | USA     | Kansas City
+ United States | USA  | USA     | Overland Park
+ United States | USA  | USA     | Topeka
+ United States | USA  | USA     | Louisville
+ United States | USA  | USA     | Lexington
+ United States | USA  | USA     | Frankfort
+ United States | USA  | USA     | New Orleans
+ United States | USA  | USA     | Baton Rouge
+ United States | USA  | USA     | Shreveport
+ United States | USA  | USA     | Lafayette
+ United States | USA  | USA     | Augusta
+ United States | USA  | USA     | Portland
+ United States | USA  | USA     | Baltimore
+ United States | USA  | USA     | Annapolis
+ United States | USA  | USA     | Boston
+ United States | USA  | USA     | Worcester
+ United States | USA  | USA     | Cambridge
+ United States | USA  | USA     | Springfield
+ United States | USA  | USA     | Lowell
+ United States | USA  | USA     | Detroit
+ United States | USA  | USA     | Grand Rapids
+ United States | USA  | USA     | Warren
+ United States | USA  | USA     | Flint
+ United States | USA  | USA     | Lansing
+ United States | USA  | USA     | Sterling Heights
+ United States | USA  | USA     | Ann Arbor
+ United States | USA  | USA     | Minneapolis
+ United States | USA  | USA     | St. Paul
+ United States | USA  | USA     | Jackson
+ United States | USA  | USA     | Kansas City
+ United States | USA  | USA     | St. Louis
+ United States | USA  | USA     | Springfield
+ United States | USA  | USA     | Independence
+ United States | USA  | USA     | Jefferson City
+ United States | USA  | USA     | Helena
+ United States | USA  | USA     | Billings
+ United States | USA  | USA     | Omaha
+ United States | USA  | USA     | Lincoln
+ United States | USA  | USA     | Las Vegas
+ United States | USA  | USA     | North Las Vegas
+ United States | USA  | USA     | Reno
+ United States | USA  | USA     | Henderson
+ United States | USA  | USA     | Carson City
+ United States | USA  | USA     | Paradise
+ United States | USA  | USA     | Enterprise
+ United States | USA  | USA     | Sunrise Manor
+ United States | USA  | USA     | Spring Valley
+ United States | USA  | USA     | Manchester
+ United States | USA  | USA     | Concord
+ United States | USA  | USA     | Newark
+ United States | USA  | USA     | Jersey City
+ United States | USA  | USA     | Paterson
+ United States | USA  | USA     | Elizabeth
+ United States | USA  | USA     | Trenton
+ United States | USA  | USA     | Camden
+ United States | USA  | USA     | Albuquerque
+ United States | USA  | USA     | Santa Fe
+ United States | USA  | USA     | New York
+ United States | USA  | USA     | Buffalo
+ United States | USA  | USA     | Rochester
+ United States | USA  | USA     | Yonkers
+ United States | USA  | USA     | Syracuse
+ United States | USA  | USA     | Albany
+ United States | USA  | USA     | Charlotte
+ United States | USA  | USA     | Raleigh
+ United States | USA  | USA     | Greensboro
+ United States | USA  | USA     | Winston-Salem
+ United States | USA  | USA     | Durham
+ United States | USA  | USA     | Fayetteville
+ United States | USA  | USA     | Bismarck
+ United States | USA  | USA     | Fargo
+ United States | USA  | USA     | Columbus
+ United States | USA  | USA     | Cleveland
+ United States | USA  | USA     | Cincinnati
+ United States | USA  | USA     | Toledo
+ United States | USA  | USA     | Akron
+ United States | USA  | USA     | Dayton
+ United States | USA  | USA     | Oklahoma City
+ United States | USA  | USA     | Tulsa
+ United States | USA  | USA     | Portland
+ United States | USA  | USA     | Eugene
+ United States | USA  | USA     | Salem
+ United States | USA  | USA     | Philadelphia
+ United States | USA  | USA     | Pittsburgh
+ United States | USA  | USA     | Erie
+ United States | USA  | USA     | Allentown
+ United States | USA  | USA     | Harrisburg
+ United States | USA  | USA     | Providence
+ United States | USA  | USA     | Columbia
+ United States | USA  | USA     | Charleston
+ United States | USA  | USA     | Sioux Falls
+ United States | USA  | USA     | Pierre
+ United States | USA  | USA     | Memphis
+ United States | USA  | USA     | Nashville-Davidson
+ United States | USA  | USA     | Knoxville
+ United States | USA  | USA     | Chattanooga
+ United States | USA  | USA     | Clarksville
+ United States | USA  | USA     | Houston
+ United States | USA  | USA     | San Antonio
+ United States | USA  | USA     | Dallas
+ United States | USA  | USA     | El Paso
+ United States | USA  | USA     | Austin
+ United States | USA  | USA     | Fort Worth
+ United States | USA  | USA     | Arlington
+ United States | USA  | USA     | Corpus Christi
+ United States | USA  | USA     | Lubbock
+ United States | USA  | USA     | Plano
+ United States | USA  | USA     | Garland
+ United States | USA  | USA     | Irving
+ United States | USA  | USA     | Amarillo
+ United States | USA  | USA     | Laredo
+ United States | USA  | USA     | Brownsville
+ United States | USA  | USA     | Pasadena
+ United States | USA  | USA     | Mesquite
+ United States | USA  | USA     | Beaumont
+ United States | USA  | USA     | Grand Prairie
+ United States | USA  | USA     | Abilene
+ United States | USA  | USA     | Waco
+ United States | USA  | USA     | Frisco
+ United States | USA  | USA     | McAllen
+ United States | USA  | USA     | Wichita Falls
+ United States | USA  | USA     | Odessa
+ United States | USA  | USA     | Salt Lake City
+ United States | USA  | USA     | Montpelier
+ United States | USA  | USA     | Virginia Beach
+ United States | USA  | USA     | Norfolk
+ United States | USA  | USA     | Richmond
+ United States | USA  | USA     | Chesapeake
+ United States | USA  | USA     | Newport News
+ United States | USA  | USA     | Arlington
+ United States | USA  | USA     | Hampton
+ United States | USA  | USA     | Alexandria
+ United States | USA  | USA     | Seattle
+ United States | USA  | USA     | Spokane
+ United States | USA  | USA     | Tacoma
+ United States | USA  | USA     | Vancouver
+ United States | USA  | USA     | Olympia
+ United States | USA  | USA     | Charleston
+ United States | USA  | USA     | Milwaukee
+ United States | USA  | USA     | Madison
+ United States | USA  | USA     | Green Bay
+ United States | USA  | USA     | Cheyenne
+ United States | USA  | USA     | Washington
+(258 rows)
+  |           
+</pre>
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+<p>
+All done! If you want to keep learning look for tutorials online, and definitely spend some time with the recommended <a href="http://www.postgresqltutorial.com/">http://www.postgresqltutorial.com/</a>
+</p>
+
+
+
+
+
+</div>
+
+
+</div>
+</div>
+</body>
+</html>

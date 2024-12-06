@@ -1,0 +1,1535 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+<head>
+    <title>DATA STRUCTURES: DAY 2</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+ .hlite { 
+    background-color: yellow;
+}
+    </style>
+    
+</head>
+<body>
+
+<div id="docContainerWrap">
+<div id="docContainer">
+<div id="docNavSearchContainer">
+
+<div id="docContent">
+
+
+<div class="SECT1">
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT"> DATA STRUCTURES: DAY 2</a></h1>
+  <h1 class="SECT1"><a name="DML-INSERT" id="DML-INSERT">  Here's my summary of yesterday's PSQL fun in class. </a></h1>
+ <P> 
+
+The first three questions of the homework:
+</P>
+ <pre class="PROGRAMLISTING">
+mondial=# \d economy
+                        Table "public.economy"
+    Column    |         Type         | Collation | Nullable | Default 
+--------------+----------------------+-----------+----------+---------
+ country      | character varying(4) |           | not null | 
+ gdp          | numeric              |           |          | 
+ agriculture  | numeric              |           |          | 
+ service      | numeric              |           |          | 
+ industry     | numeric              |           |          | 
+ inflation    | numeric              |           |          | 
+ unemployment | numeric              |           |          | 
+Indexes:
+    "economykey" PRIMARY KEY, btree (country)
+Check constraints:
+    "economygdp" CHECK (gdp >= 0::numeric)
+
+mondial=# SELECT country, gdp FROM economy ORDER BY gdp DESC NULLS LAST LIMIT 10;
+ country |   gdp    
+---------+----------
+ USA     | 16720000
+ CN      |  9330000
+ J       |  5007000
+ D       |  3593000
+ F       |  2739000
+ GB      |  2490000
+ BR      |  2190000
+ R       |  2113000
+ I       |  2068000
+ CDN     |  1825000
+(10 rows)
+
+mondial=# SELECT country, gdp FROM economy WHERE gdp < 20000 ORDER BY gdp DESC;
+ country |  gdp  
+---------+-------
+ G       | 19970
+ NEP     | 19340
+ HN      | 18880
+ BIH     | 18870
+ CGO     | 18560
+ GQ      | 17080
+ BRU     | 16560
+ PNG     | 16100
+ GE      | 15950
+ K       | 15640
+ RB      | 15530
+ SN      | 15360
+ MOC     | 14670
+ IS      | 14590
+ JA      | 14390
+ RCB     | 14250
+ TCH     | 13590
+ AL      | 12800
+ NAM     | 12300
+ BF      | 12130
+ MS      | 11900
+ SSD     | 11770
+ RMM     | 11370
+ NIC     | 11260
+ MNG     | 11140
+ MK      | 10650
+ RM      | 10530
+ ZW      | 10480
+ ARM     | 10440
+ LAO     | 10100
+ M       |  9541
+ NCL     |  9280
+ TJ      |  8513
+ BS      |  8373
+mondial=# SELECT country, inflation FROM economy ORDER BY inflation DESC NULLS LAST;
+ country | inflation 
+---------+-----------
+ SYR     |      59.1
+ YV      |      56.2
+ IR      |      42.3
+ SUD     |        25
+ RA      |      20.8
+ BY      |        19
+ WB      |        14
+ ER      |        13
+ MH      |      12.9
+ MW      |      12.2
+ RG      |      11.9
+ YE      |      11.8
+ SLE     |      11.1
+ GH      |        11
+ BHT     |        11
+ UZ      |      10.1
+ IND     |       9.6
+ JA      |       9.4
+ BI      |       9.3
+ ET      |         9
+ TM      |         9
+ ANG     |       8.9
+ RM      |       8.8
+ NGR     |       8.7
+ STP     |       8.7
+ ZW      |       8.5
+ ETH     |       8.4
+ ROU     |       8.3
+ MNG     |       8.2
+ EAT     |       7.8
+ PK      |       7.7
+ RI      |       7.7
+ TR      |       7.6
+ BD      |       7.6
+</pre>
+<p>
+This wasn't in class, but it might be helpful--here is a very simple <span class="hlite">JOIN</span> to get country names.</P>
+ <pre class="PROGRAMLISTING">
+SELECT country.name, economy.gdp 
+FROM economy JOIN country ON economy.country = country.code 
+ORDER BY economy.gdp DESC NULLS LAST LIMIT 10;
+       name      |   gdp    
+----------------+----------
+ United States  | 16720000
+ China          |  9330000
+ Japan          |  5007000
+ Germany        |  3593000
+ France         |  2739000
+ United Kingdom |  2490000
+ Brazil         |  2190000
+ Russia         |  2113000
+ Italy          |  2068000
+ Canada         |  1825000
+(10 rows)
+ </pre>
+<p>
+And here are the columns I am using to join the two tables: country.code and economy.country<BR>
+</p> <pre class="PROGRAMLISTING">
+mondial=#  SELECT code from country limit 5;
+ code 
+------
+ AL
+ GR
+ CY
+ MK
+ SRB
+(5 rows)
+
+mondial=#  select country from economy limit 5;
+ country 
+---------
+ AL
+ GR
+ CY
+ MK
+ SRB
+(5 rows)
+
+
+</pre>
+<p>
+Here we got countries that have the majority of their GDP from agriculture. Here being defined as 50% or more. (And we learned that <span class="hlite">=</SPAN> is greater than or equal to)</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM economy WHERE agriculture > 50 ORDER BY agriculture DESC;
+ country |  gdp  | agriculture | service | industry | inflation | unemployment 
+---------+-------+-------------+---------+----------+-----------+--------------
+ FALK    | 164.5 |          95 |         |          |       1.2 |          4.1
+ LB      |  1977 |        76.9 |    17.7 |      5.4 |       5.2 |           85
+ SO      |  2372 |        59.3 |    33.5 |      7.2 |           |             
+ GUB     |   880 |          58 |    28.5 |     13.5 |       1.9 |             
+ RCA     |  2050 |        56.6 |    28.9 |     14.5 |         7 |            8
+ COM     |   658 |          51 |      39 |       10 |       2.5 |           20
+(6 rows)
+
+
+
+</pre>
+<p>
+Here is another definition of majority agriculture. Note the <span class="hlite">AND</SPAN> in the <span class="hlite">WHERE</SPAN> test.
+</P>
+ <pre class="PROGRAMLISTING">
+
+
+mondial=# SELECT * FROM economy WHERE agriculture > service AND agriculture > industry ORDER BY agriculture DESC;
+ country |  gdp  | agriculture | service | industry | inflation | unemployment 
+---------+-------+-------------+---------+----------+-----------+--------------
+ LB      |  1977 |        76.9 |    17.7 |      5.4 |       5.2 |           85
+ SO      |  2372 |        59.3 |    33.5 |      7.2 |           |             
+ GUB     |   880 |          58 |    28.5 |     13.5 |       1.9 |             
+ RCA     |  2050 |        56.6 |    28.9 |     14.5 |         7 |            8
+ COM     |   658 |          51 |      39 |       10 |       2.5 |           20
+ SOL     |  1099 |          50 |    39.4 |     10.6 |       2.6 |             
+ SLE     |  4607 |        47.9 |    33.5 |     18.6 |      11.1 |             
+ ETH     | 47340 |          47 |    42.2 |     10.8 |       8.4 |         17.5
+ TCH     | 13590 |        46.3 |    43.8 |      9.9 |       4.5 |             
+ CGO     | 18560 |        44.3 |      34 |     21.7 |       7.1 |             
+ RMM     | 11370 |        38.5 |      37 |     24.4 |       0.1 |           30
+(11 rows)
+</pre>
+<p>
+In class we noted that the Falkland Islands disappeared, because there was a <span class="hlite">null value</span> involved. To deal with null values in an comparison you can use <span class="hlite">coalesce()</span> to impute values.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM economy 
+WHERE agriculture > COALESCE(service,0) AND agriculture > COALESCE(industry,0) ORDER BY agriculture DESC;
+ country |  gdp  | agriculture | service | industry | inflation | unemployment 
+---------+-------+-------------+---------+----------+-----------+--------------
+ FALK    | 164.5 |          95 |         |          |       1.2 |          4.1
+ LB      |  1977 |        76.9 |    17.7 |      5.4 |       5.2 |           85
+ SO      |  2372 |        59.3 |    33.5 |      7.2 |           |             
+ GUB     |   880 |          58 |    28.5 |     13.5 |       1.9 |             
+ RCA     |  2050 |        56.6 |    28.9 |     14.5 |         7 |            8
+ COM     |   658 |          51 |      39 |       10 |       2.5 |           20
+ SOL     |  1099 |          50 |    39.4 |     10.6 |       2.6 |             
+ SLE     |  4607 |        47.9 |    33.5 |     18.6 |      11.1 |             
+ ETH     | 47340 |          47 |    42.2 |     10.8 |       8.4 |         17.5
+ TCH     | 13590 |        46.3 |    43.8 |      9.9 |       4.5 |             
+ CGO     | 18560 |        44.3 |      34 |     21.7 |       7.1 |             
+ RMM     | 11370 |        38.5 |      37 |     24.4 |       0.1 |           30
+(12 rows)
+
+
+
+ </pre>
+ <p>
+Not in class, but you can search for null values using <span class="hlite">IS NULL</span>. You can also filter out null values using <span class="hlite">IS NOT NULL</span> but be careful when using this because you might want to know where the null values are.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# select * from economy where service IS NULL OR industry IS NULL;
+ country |  gdp  | agriculture | service | industry | inflation | unemployment 
+---------+-------+-------------+---------+----------+-----------+--------------
+ AD      |       |             |         |          |           |             
+ V       |       |             |         |          |           |             
+ CEU     |       |             |         |          |           |             
+ MEL     |       |             |         |          |           |             
+ SVA     |       |             |         |          |           |             
+ GAZA    |  1700 |             |         |          |       5.7 |             
+ CX      |       |             |         |          |           |             
+ CC      |       |             |         |          |           |             
+ NF      |       |             |         |          |           |             
+ GU      |  4600 |             |         |          |         4 |          8.2
+ TOK     |   1.5 |             |         |          |           |             
+ AS      | 462.2 |             |         |          |           |         29.8
+ WF      |    60 |             |         |          |       2.8 |         12.2
+ PN      |       |             |         |          |           |             
+ WSA     |       |             |         |          |           |             
+ SSD     | 11770 |             |         |          |       1.7 |             
+ MYT     | 953.6 |             |         |          |           |             
+ RE      |  2900 |             |         |          |           |             
+ HELX    |    18 |             |         |          |           |             
+ SBAR    |       |             |         |          |           |             
+ NLB     |       |             |         |          |           |             
+ GF      |   800 |             |         |          |       2.5 |             
+ FALK    | 164.5 |          95 |         |          |       1.2 |          4.1
+(23 rows)
+
+ </pre>
+<p>
+Here's the final answer to part one, with the join on country.code and economy.country</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT country, unemployment FROM economy ORDER BY unemployment DESC NULLS LAST LIMIT 20;
+ country | unemployment 
+---------+--------------
+ ZW      |           95
+ NAU     |           90
+ LB      |           85
+ BF      |           77
+ TM      |           60
+ DJI     |           59
+ RCB     |           53
+ SN      |           48
+ NEP     |           46
+ BIH     |         44.3
+ RH      |         40.6
+ EAK     |           40
+ SD      |           40
+ MH      |           36
+ AFG     |           35
+ YE      |           35
+ WG      |         33.5
+ KOS     |         30.9
+ RMM     |           30
+ RIM     |           30
+(20 rows)
+
+mondial=# SELECT country.name, economy.unemployment 
+FROM economy JOIN country ON country.code = economy.country
+ORDER BY unemployment DESC NULLS LAST LIMIT 20;
+          name          | unemployment 
+------------------------+--------------
+ Zimbabwe               |           95
+ Nauru                  |           90
+ Liberia                |           85
+ Burkina Faso           |           77
+ Turkmenistan           |           60
+ Djibouti               |           59
+ Congo                  |           53
+ Senegal                |           48
+ Nepal                  |           46
+ Bosnia and Herzegovina |         44.3
+ Haiti                  |         40.6
+ Kenya                  |           40
+ Eswatini               |           40
+ Marshall Islands       |           36
+ Afghanistan            |           35
+ Yemen                  |           35
+ Grenada                |         33.5
+ Kosovo                 |         30.9
+ Mali                   |           30
+ Mauritania             |           30
+(20 rows)
+
+   </pre>
+
+<p>
+The above table displays the 2 key columns that are being used to JOIN the tables. Here is the entirety of the two joined tables just so you can see what is happening in the join. </p>
+<pre class="PROGRAMLISTING">
+
+mondial=# SELECT * FROM economy JOIN country ON economy.country = country.code ORDER BY code;
+ country |   gdp    | agriculture | service | industry | inflation | unemployment |               name               | code |       capital        |             province             |   area   | population 
+---------+----------+-------------+---------+----------+-----------+--------------+----------------------------------+------+----------------------+----------------------------------+----------+------------
+ A       |   417900 |         1.6 |    69.8 |     28.6 |       2.1 |          4.9 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ AFG     |    20650 |          20 |    54.4 |     25.6 |       6.8 |           35 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AG      |     1220 |         2.2 |    81.4 |     16.4 |         3 |           11 | Antigua and Barbuda              | AG   | St. John's           | Antigua and Barbuda              |      442 |      81799
+ AL      |    12800 |        19.5 |    68.5 |       12 |       1.7 |         16.9 | Albania                          | AL   | Tirana               | Albania                          |    28750 |    2821977
+ AMSA    |    462.2 |             |         |          |           |         29.8 | American Samoa                   | AMSA | Pago Pago            | American Samoa                   |      199 |      49710
+ AND     |     4800 |          14 |       6 |       79 |       1.1 |            4 | Andorra                          | AND  | Andorra la Vella     | Andorra                          |      450 |      79535
+ ANG     |   124000 |        10.2 |    28.4 |     61.4 |       8.9 |              | Angola                           | ANG  | Luanda               | Luanda                           |  1246700 |   25789024
+ ARM     |    10440 |        20.6 |    42.1 |     37.3 |       6.2 |         17.3 | Armenia                          | ARM  | Yerevan              | Armenia                          |    29800 |    3026879
+ ARU     |     2516 |         0.4 |    66.3 |     33.3 |        -2 |          6.9 | Aruba                            | ARU  | Oranjestad           | Aruba                            |      193 |     108166
+ AUS     |  1488000 |         3.8 |    68.7 |     27.4 |       2.4 |          5.7 | Australia                        | AUS  | Canberra             | Australia Capital Territory      |  7692024 |   25738142
+ AXA     |    175.4 |         2.5 |    73.8 |     23.6 |       3.1 |            8 | Anguilla                         | AXA  | The Valley           | Anguilla                         |      102 |      13452
+ AZ      |    76010 |         6.2 |    30.8 |       63 |       2.4 |            6 | Azerbaijan                       | AZ   | Baku                 | Azerbaijan                       |    86600 |    9356500
+ B       |   507400 |         0.8 |    76.6 |     22.6 |       1.3 |          8.8 | Belgium                          | B    | Bruxelles            | Bruxelles                        |    30510 |   11492641
+ BD      |   140200 |        17.2 |    53.9 |     28.9 |       7.6 |            5 | Bangladesh                       | BD   | Dhaka                | Dhaka                            |   144000 |  149772364
+ BDS     |     4262 |         3.1 |      83 |     13.9 |       2.1 |         11.4 | Barbados                         | BDS  | Bridgetown           | Barbados                         |      430 |     277821
+ BEN     |     8359 |        31.6 |    55.6 |     12.9 |       2.4 |              | Benin   
+</pre>
+<p>
+Next I demonstrated the bonus question, in which we do some math with our columns in <span class="hlite">SELECT</span>. Note that I also alias my math column using <span class="hlite">AS</span> so the resulting column name is clear. </p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT country, gdp, agriculture, gdp * agriculture * 0.01 AS totalag
+FROM economy WHERE agriculture > 25 ORDER BY totalag DESC;
+ country |  gdp   | agriculture |  totalag   
+---------+--------+-------------+------------
+ NGR     | 502000 |        30.9 | 155118.000
+ PK      | 236500 |        25.3 |  59834.500
+ MYA     |  59430 |          38 |   22583.40
+ ETH     |  47340 |          47 |   22249.80
+ SUD     |  52500 |        27.4 |  14385.000
+ EAK     |  45310 |        29.3 |  13275.830
+ EAT     |  31940 |        27.6 |   8815.440
+ CGO     |  18560 |        44.3 |   8222.080
+ CI      |  28280 |        26.3 |   7437.640
+ NEP     |  19340 |        36.8 |   7117.120
+ TCH     |  13590 |        46.3 |   6292.170
+ K       |  15640 |        34.8 |   5442.720
+ PNG     |  16100 |        27.6 |   4443.600
+ RMM     |  11370 |        38.5 |   4377.450
+ MOC     |  14670 |        28.7 |   4210.290
+ BF      |  12130 |        33.6 |   4075.680
+ LAO     |  10100 |        30.5 |   3080.500
+ RM      |  10530 |        27.3 |   2874.690
+ BEN     |   8359 |        31.6 |   2641.444
+ RN      |   7304 |        35.2 |   2571.008
+ RWA     |   7700 |        31.9 |   2456.300
+ SLE     |   4607 |        47.9 |   2206.753
+ LB      |   1977 |        76.9 |   1520.313
+ SO      |   2372 |        59.3 |   1406.596
+ WB      |   3700 |          33 |    1221.00
+ RT      |   4299 |        27.6 |   1186.524
+ RCA     |   2050 |        56.6 |   1160.300
+ MW      |   3683 |        29.4 |   1082.802
+ BI      |   2676 |        34.4 |    920.544
+ SOL     |   1099 |          50 |     549.50
+ GUB     |    880 |          58 |     510.40
+ COM     |    658 |          51 |     335.58
+ FALK    |  164.5 |          95 |    156.275
+(33 rows)
+
+</pre>
+<p>
+Same query with the <span class="hlite">ROUND()</span> method. Note that the second parameter (,2) allows you to specify the number of decimal points. </p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT country, gdp, agriculture, ROUND(gdp * agriculture * 0.01) AS totalag
+FROM economy WHERE agriculture > 25 ORDER BY totalag DESC;
+ country |  gdp   | agriculture | totalag 
+---------+--------+-------------+---------
+ NGR     | 502000 |        30.9 |  155118
+ PK      | 236500 |        25.3 |   59835
+ MYA     |  59430 |          38 |   22583
+ ETH     |  47340 |          47 |   22250
+ SUD     |  52500 |        27.4 |   14385
+ EAK     |  45310 |        29.3 |   13276
+ EAT     |  31940 |        27.6 |    8815
+ CGO     |  18560 |        44.3 |    8222
+ CI      |  28280 |        26.3 |    7438
+ NEP     |  19340 |        36.8 |    7117
+ TCH     |  13590 |        46.3 |    6292
+ K       |  15640 |        34.8 |    5443
+ PNG     |  16100 |        27.6 |    4444
+ RMM     |  11370 |        38.5 |    4377
+ MOC     |  14670 |        28.7 |    4210
+ BF      |  12130 |        33.6 |    4076
+ LAO     |  10100 |        30.5 |    3081
+ RM      |  10530 |        27.3 |    2875
+ BEN     |   8359 |        31.6 |    2641
+ RN      |   7304 |        35.2 |    2571
+ RWA     |   7700 |        31.9 |    2456
+ SLE     |   4607 |        47.9 |    2207
+ LB      |   1977 |        76.9 |    1520
+ SO      |   2372 |        59.3 |    1407
+ WB      |   3700 |          33 |    1221
+ RT      |   4299 |        27.6 |    1187
+ RCA     |   2050 |        56.6 |    1160
+ MW      |   3683 |        29.4 |    1083
+ BI      |   2676 |        34.4 |     921
+ SOL     |   1099 |          50 |     550
+ GUB     |    880 |          58 |     510
+ COM     |    658 |          51 |     336
+ FALK    |  164.5 |          95 |     156
+(33 rows)
+
+
+</pre>
+<p>
+We jumped into spoken. First demoing the difference between the language table and the spoken table.
+</p>
+
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM spoken ORDER BY percentage DESC NULLS LAST LIMIT 10;
+ country |    language     | percentage 
+---------+-----------------+------------
+ FALK    | English         |        100
+ SPM     | French          |        100
+ HELX    | English         |        100
+ CV      | Krioulo         |        100
+ ROK     | Korean          |        100
+ J       | Japanese        |        100
+ PN      | Pitcairn Creole |        100
+ KP      | Korean          |        100
+ GBM     | English         |        100
+ GAZA    | Arabic          |       99.8
+(10 rows)
+
+</pre>
+<p> 
+We noted how you can order by multiple criteria. This query orders by percentage first, and then when the percentages are equal it orders by country (and the next query is by language).</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM spoken ORDER BY percentage DESC NULLS LAST, country LIMIT 10;
+ country |    language     | percentage 
+---------+-----------------+------------
+ CV      | Krioulo         |        100
+ FALK    | English         |        100
+ GBM     | English         |        100
+ HELX    | English         |        100
+ J       | Japanese        |        100
+ KP      | Korean          |        100
+ PN      | Pitcairn Creole |        100
+ ROK     | Korean          |        100
+ SPM     | French          |        100
+ GAZA    | Arabic          |       99.8
+(10 rows)
+
+mondial=# SELECT * FROM spoken ORDER BY percentage DESC NULLS LAST, language LIMIT 10;
+ country |    language     | percentage 
+---------+-----------------+------------
+ HELX    | English         |        100
+ GBM     | English         |        100
+ FALK    | English         |        100
+ SPM     | French          |        100
+ J       | Japanese        |        100
+ KP      | Korean          |        100
+ ROK     | Korean          |        100
+ CV      | Krioulo         |        100
+ PN      | Pitcairn Creole |        100
+ GAZA    | Arabic          |       99.8
+(10 rows)
+</pre>
+<p> 
+Then we did the aggregate query of which counties had the most languages.</P>
+ <pre class="PROGRAMLISTING">
+
+mondial=# SELECT COUNT(language), country FROM spoken GROUP BY country ORDER BY COUNT(language) DESC LIMIT 10;
+ count | country 
+-------+---------
+    35 | CN
+    28 | IND
+    27 | R
+    27 | USA
+    22 | CDN
+    20 | GB
+    18 | NGR
+    16 | CAM
+    16 | EAT
+    16 | F
+(10 rows)
+
+</pre>
+<p>
+We noted that the count remains the same whether we counted by 'language' or 'country' (or just about anything that existed in the table).<BR>
+This is because what really matters is the grouping by 'country'. </P>
+<p> so I did a queries to show exactly what we mean when we are grouping using <span class="hlite">GROUP</span>. Here for China languages. This is what makes up the CN group—35 rows = a grouped count of 35 above.</P>
+ <pre class="PROGRAMLISTING">
+mondial=# SELECT * FROM spoken WHERE country = 'CN';
+ country |    language     | percentage 
+---------+-----------------+------------
+ CN      | Mandarin        |         71
+ CN      | Hokkien         |        6.2
+ CN      | Wu              |        6.1
+ CN      | Cantonese       |        5.6
+ CN      | Gan             |        3.9
+ CN      | Hakka           |        3.5
+ CN      | Xiang           |        3.0
+ CN      | Uyghur          |        0.8
+ CN      | Northern Zhuang |        0.7
+ CN      | Southern Zhuang |        0.7
+ CN      | Yi              |        0.5
+ CN      | Mongolian       |        0.4
+ CN      | Huizhou         |        0.3
+ CN      | Bouyei          |        0.2
+ CN      | Hmu             |        0.2
+ CN      | Hmong           |        0.2
+ CN      | Amdolese        |       0.15
+ CN      | Kazakh          |       0.15
+ CN      | Khams           |        0.1
+ CN      | Kam             |        0.1
+ CN      | Hani            |        0.1
+ CN      | Iu-Mien         |        0.1
+ CN      | Central Tibetan |        0.1
+ CN      | Tujia           |       0.05
+ CN      | Hlai            |       0.05
+ CN      | Tai Nuea        |       0.05
+ CN      | Lisu            |       0.05
+ CN      | Lahu            |       0.04
+ CN      | Wa              |       0.03
+ CN      | Dongxiang       |      0.015
+ CN      | Xibe            |      0.014
+ CN      | Jingpo          |       0.01
+ CN      | Kyrgyz          |       0.01
+ CN      | Salar           |       0.01
+ CN      | Oirat           |       0.01
+(35 rows)
+ </pre>
+ <p>
+In an aggregate querry <span class="hlite">GROUP BY</span> essentially doing this, but then compressing all of those common rows into one row, and getting a <span class="hlite">COUNT()</span>, <span class="hlite">AVG()</span>, <span class="hlite">SUM()</span>, <span class="hlite">MAX()</span>, <span class="hlite">MIN()</span>, etc. from these common rows.</P>
+
+
+<p>
+Then we used <span class="hlite">JOIN</span> to get country names that original query that counts the countries with the most languages.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=#  SELECT COUNT(language), country.name 
+ FROM spoken JOIN country ON country.code = spoken.country
+ GROUP BY country.name
+ ORDER BY COUNT(language) DESC LIMIT 10;
+ count |      name      
+-------+----------------
+    35 | China
+    28 | India
+    27 | United States
+    27 | Russia
+    22 | Canada
+    20 | United Kingdom
+    18 | Nigeria
+    16 | Cameroon
+    16 | France
+    16 | Tanzania
+(10 rows)
+
+
+
+</pre>
+<p>
+Then we had  digression to show exactly how a <span class="hlite">JOIN</span> works in the context of the spoken table, which is simpler. Here are the country codes from both tables—this is how the matching ON is working. Note that there are 35 rows for China in the spoken table, and then one single row from the country table that is being matched 35 times.
+</p>
+<pre class="PROGRAMLISTING">
+SELECT country.name, country.code, spoken.country, spoken.language
+ FROM spoken JOIN country ON country.code = spoken.country
+ WHERE spoken.country = 'CN';
+ name  | code | country |    language     
+-------+------+---------+-----------------
+ China | CN   | CN      | Amdolese
+ China | CN   | CN      | Bouyei
+ China | CN   | CN      | Cantonese
+ China | CN   | CN      | Central Tibetan
+ China | CN   | CN      | Dongxiang
+ China | CN   | CN      | Gan
+ China | CN   | CN      | Hakka
+ China | CN   | CN      | Hani
+ China | CN   | CN      | Hlai
+ China | CN   | CN      | Hmong
+ China | CN   | CN      | Hmu
+ China | CN   | CN      | Hokkien
+ China | CN   | CN      | Huizhou
+ China | CN   | CN      | Iu-Mien
+ China | CN   | CN      | Jingpo
+ China | CN   | CN      | Kam
+ China | CN   | CN      | Kazakh
+ China | CN   | CN      | Khams
+ China | CN   | CN      | Kyrgyz
+ China | CN   | CN      | Lahu
+ China | CN   | CN      | Lisu
+ China | CN   | CN      | Mandarin
+ China | CN   | CN      | Mongolian
+ China | CN   | CN      | Northern Zhuang
+ China | CN   | CN      | Oirat
+ China | CN   | CN      | Salar
+ China | CN   | CN      | Southern Zhuang
+ China | CN   | CN      | Tai Nuea
+ China | CN   | CN      | Tujia
+ China | CN   | CN      | Uyghur
+ China | CN   | CN      | Wa
+ China | CN   | CN      | Wu
+ China | CN   | CN      | Xiang
+ China | CN   | CN      | Xibe
+ China | CN   | CN      | Yi
+(35 rows)
+</pre>
+<p>
+Above, again, is our join with the two key columns that allowed the join to happen. Below is a simple <span class="hlite">JOIN</span> (all columns), that combines the 'spoken' table with the 'country' table. Note that we have the same rows for Austria, but now it has all of the other information from the 'country' table joined to each matching row.
+</p>
+<pre class="PROGRAMLISTING">
+SELECT * FROM spoken JOIN country ON country.code = spoken.country ORDER BY code;
+ country |         language         | percentage |               name               | code |       capital        |             province             |   area   | population 
+---------+--------------------------+------------+----------------------------------+------+----------------------+----------------------------------+----------+------------
+ A       | Slovenian                |        0.3 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Arabic                   |        0.2 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Turkish                  |        2.3 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Hungarian                |        0.5 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Serbo-Croatian           |        4.2 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | German                   |       92.6 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Polish                   |       0.35 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ A       | Albanian                 |       0.35 | Austria                          | A    | Wien                 | Wien                             |    83850 |    8401940
+ AFG     | Dari                     |         41 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Pashto                   |         41 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Uzbek                    |          8 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Turkmen                  |          3 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Shugni                   |        0.1 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Arabic                   |          1 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Balochi                  |          1 | Afghanistan                      | AFG  | Kabul                | Afghanistan                      |   647500 |   31390200
+ AFG     | Urdu                     |          3 | Afghanistan                      | AFG  | Kabul                |
+
+</pre>
+<p>
+The only actual column that we want for our aggregate query is the one that has the countries name. Hopefully this explains why we <span class="hlite">GROUP BY</span> 'country.name'. For a <span class="hlite">COUNT()</span> we are just counting the number of rows per each country, but the information we want to see is the actual country name which only exists in the country.name column.</p>
+<pre class="PROGRAMLISTING">
+mondial=#  SELECT COUNT(language), country.name 
+ FROM spoken JOIN country ON country.code = spoken.country
+ GROUP BY country.name
+ ORDER BY COUNT(language) DESC LIMIT 10;
+ count |      name      
+-------+----------------
+    35 | China
+    28 | India
+    27 | United States
+    27 | Russia
+    22 | Canada
+    20 | United Kingdom
+    18 | Nigeria
+    16 | Cameroon
+    16 | France
+    16 | Tanzania
+(10 rows)
+</pre>
+<p>
+Next we changed the grouping column to 'language' (the name of the language) get a <span class="hlite">COUNT</span> of the most common languages. 
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT language, count(country) FROM spoken GROUP BY language ORDER BY count(country) DESC LIMIT 10;
+  language  | count 
+------------+-------
+ English    |    88
+ Arabic     |    56
+ French     |    52
+ Spanish    |    41
+ German     |    26
+ Russian    |    21
+ Portuguese |    20
+ Italian    |    17
+ Turkish    |    16
+ Fulfulde   |    15
+(10 rows)
+
+</pre>
+
+<p>
+We added another column of aggregation--average percentage (this is still grouped by the language name).
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT language, count(country), avg(percentage) 
+FROM spoken GROUP BY language 
+ORDER BY count(country) DESC LIMIT 20;
+  language  | count |         avg         
+------------+-------+---------------------
+ English    |    88 | 31.1878125000000000
+ Arabic     |    56 | 29.8173913043478261
+ French     |    52 | 23.7571428571428571
+ Spanish    |    41 | 53.2527777777777778
+ German     |    26 | 13.9926923076923077
+ Russian    |    21 | 16.2761904761904762
+ Portuguese |    20 | 22.0861111111111111
+ Italian    |    17 | 16.9714285714285714
+ Turkish    |    16 |  9.1093750000000000
+ Fulfulde   |    15 | 12.7600000000000000
+ Roma       |    15 |  1.2666666666666667
+ Chinese    |    13 |  2.2615384615384615
+ Filipino   |    11 |  7.4090909090909091
+ Ukrainian  |    11 |  7.0818181818181818
+ Mandarin   |    10 | 14.7800000000000000
+ Berber     |    10 |  9.1714285714285714
+ Romanian   |     9 | 19.7555555555555556
+ Albanian   |     9 | 25.5944444444444444
+ Polish     |     9 | 12.1777777777777778
+ Urdu       |     9 |  2.2722222222222222
+(20 rows)
+
+
+</pre>
+<p>
+We added <span class="hlite">WHERE</span> to the query, to filter out instances where the language is spoken by less than 21 percent of the population. This filtering happens before the aggregate query is done, so it is aggregating less rows than before. 
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT language, count(country), avg(percentage) 
+FROM spoken 
+WHERE percentage >=21
+GROUP BY language 
+ORDER BY count(country) DESC LIMIT 20;
+    language    | count |         avg          
+----------------+-------+----------------------
+ English        |    25 |  72.7960000000000000
+ Spanish        |    21 |  85.2238095238095238
+ Arabic         |    17 |  76.8117647058823529
+ French         |    10 |  59.0800000000000000
+ Russian        |     5 |  49.2400000000000000
+ Portuguese     |     5 |  65.5600000000000000
+ German         |     4 |  84.2250000000000000
+ Serbo-Croatian |     4 |  92.9000000000000000
+ Albanian       |     3 |  72.8000000000000000
+ Papiamento     |     3 |  74.7666666666666667
+ Malay          |     3 |  73.1000000000000000
+ Fulfulde       |     3 |  25.8000000000000000
+ Italian        |     3 |  70.3333333333333333
+ Dutch          |     3 |  63.3333333333333333
+ Greek          |     3 |  71.0000000000000000
+ Turkish        |     2 |  54.2500000000000000
+ Thai           |     2 |  70.6000000000000000
+ Korean         |     2 | 100.0000000000000000
+ Berber         |     2 |  27.5000000000000000
+ Mandarin       |     2 |  52.9500000000000000
+(20 rows)
+
+</pre>
+<p>
+Then we added <span class="hlite">HAVING</span> to filter out all languages that appear in less than five countries. This happens after the aggregation has been done. That is the difference between  <span class="hlite">WHERE</span> and  <span class="hlite">HAVING</span>.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT language, count(country), avg(percentage) 
+FROM spoken 
+WHERE percentage >=21
+GROUP BY language 
+HAVING count(country) > 4
+ORDER BY count(country) DESC LIMIT 20;
+  language  | count |         avg         
+------------+-------+---------------------
+ English    |    25 | 72.7960000000000000
+ Spanish    |    21 | 85.2238095238095238
+ Arabic     |    17 | 76.8117647058823529
+ French     |    10 | 59.0800000000000000
+ Russian    |     5 | 49.2400000000000000
+ Portuguese |     5 | 65.5600000000000000
+(6 rows)
+</pre>
+<p>
+This is Portuguese group that is getting aggregated above. This is showing all of the countries that have Portuguese spoken by more than 20% of its population. 
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT language, percentage, country
+FROM spoken
+WHERE percentage >= 21 AND language = 'Portuguese';
+  language  | percentage | country 
+------------+------------+---------
+ Portuguese |         97 | P
+ Portuguese |       30.8 | TL
+ Portuguese |         47 | ANG
+ Portuguese |         55 | STP
+ Portuguese |         98 | BR
+(5 rows)
+</pre>
+<p>
+Next, I used <span class="hlite">MAX()</span> to get the maximum value for each country out of their group of rows. Note how we see the highest number from each of the groups above.
+</p>
+<pre class="PROGRAMLISTING">
+
+mondial=# SELECT MAX(percentage), country FROM spoken GROUP BY country ORDER BY country;
+ max  | country 
+------+---------
+ 92.6 | A
+   60 | AD
+   41 | AFG
+   90 | AG
+ 98.8 | AL
+ 54.8 | AND
+   47 | ANG
+ 97.9 | ARM
+ 69.4 | ARU
+ 88.6 | AS
+ 72.7 | AUS
+   95 | AXA
+ 92.5 | AZ
+   55 | B
+ 98.5 | BD
+   95 | BDS
+   38 | BEN
+   52 | BF
+   85 | BG
+   30 | BHT
+   98 | BI
+ 98.3 | BIH
+   90 | BM
+ 60.7 | BOL
+   98 | BR
+      | BRN
+ 65.7 | BRU
+   75 | BS
+   90 | BVI
+ 70.2 | BY
+   43 | BZ
+   95 | C
+   20 | CAM
+ 69.6 | CC
+</pre>
+<p>
+Then I jumped into a complex query, creating subtable using <span class="hlite">WITH()</span>. Because an aggregate query compresses the rows based on the group specified, it cannot remember information from other columns in each individual row, like the name of the language, which would be very helpful to see. What this sub-table/temporary table does is: it makes the table above, the aggregate query we just made, but then it joins it back to the original table and matches the values in order to get which language that maximum number represents. Note that for Afghanistan, there happen to be two languages that are at 41. So this, hopefully, speaks to why you need to go back and re-join, because this kind of complexity can't be handled simply by an aggregate query.
+<BR><BR>
+The query itself is pretty complex, but might be helpful to study. I am creating a temporary table called 'maxtable' which is the table we see above. But then I am joining it back to the 'spoken' table using two criteria, matching country and matching that percent (the maximum). Note that we get two rows for AFG, because it has two equally maximum languages!</p>
+<pre class="PROGRAMLISTING">
+
+WITH maxtable AS (SELECT MAX(percentage) AS pr, country FROM spoken GROUP BY country ORDER BY country)
+ SELECT spoken.country, spoken.language, spoken.percentage
+ FROM spoken JOIN maxtable
+ ON spoken.percentage = maxtable.pr AND spoken.country = maxtable.country
+ ORDER BY spoken.country;
+ country |         language         | percentage 
+---------+--------------------------+------------
+ A       | German                   |       92.6
+ AD      | Greek                    |         60
+ AFG     | Dari                     |         41
+ AFG     | Pashto                   |         41
+ AG      | Antiguan Creole          |         90
+ AL      | Albanian                 |       98.8
+ AND     | Catalan                  |       54.8
+ ANG     | Portuguese               |         47
+ ARM     | Armenian                 |       97.9
+ ARU     | Papiamento               |       69.4
+ AS      | Samoan                   |       88.6
+ AUS     | English                  |       72.7
+ AXA     | English                  |         95
+ AZ      | Azerbaijani              |       92.5
+ B       | Dutch                    |         55
+ BD      | Bengali                  |       98.5
+ BDS     | Bajan                    |         95
+ BEN     | Fon                      |         38
+ BF      | Mossi                    |         52
+ BG      | Bulgarian                |         85
+ BHT     | Nepali                   |         30
+ BI      | Kirundi                  |         98
+ BIH     | Serbo-Croatian           |       98.3
+ BM      | English                  |         90
+ BOL     | Spanish                  |       60.7
+ BR      | Portuguese               |         98
+ BRU     | Malay                    |       65.7
+ BS      | English                  |         75
+ BVI     | English                  |         90
+ BY      | Russian                  |       70.2
+ BZ      | Spanish                  |         43
+ C       | Spanish                  |         95
+ CAM     | Pahuin                   |         20
+ CAM     | Fulfulde                 |         20
+</pre>
+<p>
+Here is that join one more time, this time using all of the columns from both tables so you can see how the sub table is being matched up with the original table. All three columns from the spoken table are on the left, which are joined with all two table from the temporary table we created usiung MAX(). Note, again, we joined on TWO criteria, matching country and percentage.</p>
+<pre class="PROGRAMLISTING">
+mondial=# WITH maxtable AS (SELECT MAX(percentage) AS pr, country FROM spoken GROUP BY country ORDER BY country)
+ SELECT *
+ FROM spoken JOIN maxtable
+ ON spoken.percentage = maxtable.pr AND spoken.country = maxtable.country
+ ORDER BY spoken.country;
+ country |         language         | percentage |  pr  | country 
+---------+--------------------------+------------+------+---------
+ A       | German                   |       92.6 | 92.6 | A
+ AD      | Greek                    |         60 |   60 | AD
+ AFG     | Dari                     |         41 |   41 | AFG
+ AFG     | Pashto                   |         41 |   41 | AFG
+ AG      | Antiguan Creole          |         90 |   90 | AG
+ AL      | Albanian                 |       98.8 | 98.8 | AL
+ AND     | Catalan                  |       54.8 | 54.8 | AND
+ ANG     | Portuguese               |         47 |   47 | ANG
+ ARM     | Armenian                 |       97.9 | 97.9 | ARM
+ ARU     | Papiamento               |       69.4 | 69.4 | ARU
+ AS      | Samoan                   |       88.6 | 88.6 | AS
+ AUS     | English                  |       72.7 | 72.7 | AUS
+ AXA     | English                  |         95 |   95 | AXA
+ AZ      | Azerbaijani              |       92.5 | 92.5 | AZ
+ B       | Dutch                    |         55 |   55 | B
+ BD      | Bengali                  |       98.5 | 98.5 | BD
+ BDS     | Bajan                    |         95 |   95 | BDS
+ BEN     | Fon                      |         38 |   38 | BEN
+ BF      | Mossi                    |         52 |   52 | BF
+ BG      | Bulgarian                |         85 |   85 | BG
+ BHT     | Nepali                   |         30 |   30 | BHT
+</pre>
+<p>
+As I mentioned, you do not need to use WITH()—you can embed the temporary table in () in the FROM/JOIN statement. I just needs to be aliased (named). I think WITH() is more readable, but more advanced SQL writers tend to do this this way.</p>
+<pre class="PROGRAMLISTING">
+SELECT spoken.country, spoken.language, spoken.percentage
+ FROM spoken JOIN (SELECT MAX(percentage) AS pr, country FROM spoken GROUP BY country ORDER BY country) AS maxtable
+ ON spoken.percentage = maxtable.pr AND spoken.country = maxtable.country
+ ORDER BY spoken.country;
+ country |         language         | percentage 
+---------+--------------------------+------------
+ A       | German                   |       92.6
+ AD      | Greek                    |         60
+ AFG     | Dari                     |         41
+ AFG     | Pashto                   |         41
+ AG      | Antiguan Creole          |         90
+ AL      | Albanian                 |       98.8
+ AND     | Catalan                  |       54.8
+ ANG     | Portuguese               |         47
+ ARM     | Armenian                 |       97.9
+ ARU     | Papiamento               |       69.4
+ AS      | Samoan                   |       88.6
+ AUS     | English                  |       72.7
+ AXA     | English                  |         95
+ AZ      | Azerbaijani              |       92.5
+ B       | Dutch                    |         55
+ BD      | Bengali                  |       98.5
+ BDS     | Bajan                    |         95
+ BEN     | Fon                      |         38
+ BF      | Mossi                    |         52
+ BG      | Bulgarian                |         85
+ BHT     | Nepali                   |         30
+ BI      | Kirundi                  |         98
+ BIH     | Serbo-Croatian           |       98.3
+ BM      | English                  |         90
+ BOL     | Spanish                  |       60.7
+ BR      | Portuguese               |         98
+ BRU     | Malay                    |       65.7
+ BS      | English                  |         75
+ BVI     | English                  |         90
+ BY      | Russian                  |       70.2
+ BZ      | Spanish                  |         43
+ C       | Spanish                  |         95
+</pre>
+
+
+<p>
+I did mention that there is a shortcut for this in class, so here is the deal with that:
+
+There is specialized and somewhat logically opaque method of pulling out entire rows by max or min values. It can be very confusing, but it can be handy to know if you are interested. It uses an extension of SELECT DISTINCT called <span class="hlite">DISTINCT ON( )</span>. It's kind of like grouping a non-aggregate query, and you can get the max or min row for each 'group' by using <span class="hlite">ORDER BY</span>. Actually you order by highest or lowest, and <span class="hlite">DISTINCT ON( )</span> will show you the row that comes out on top for the distinct column you are looking for. So first it orders by country, and then by percentage DESC—and DISTINCT ON(country) extracts the top value for each country. It has the same flaw as using an agregate MAX()/MIN() in that it doesn't deal with ties—but in certain situations it can be super handy!
+</P><pre class="PROGRAMLISTING">
+SELECT DISTINCT ON (country)
+	country,
+	percentage,
+	name
+FROM language
+ORDER BY country, percentage DESC NULLS LAST;
+ country | percentage |           name           
+---------+------------+--------------------------
+ A       |       92.6 | German
+ AFG     |         41 | Pashto
+ AG      |         90 | Antiguan Creole
+ AL      |       98.8 | Albanian
+ AMSA    |       88.6 | Samoan
+ AND     |       54.8 | Catalan
+ ANG     |         47 | Portuguese
+ ARM     |       97.9 | Armenian
+ ARU     |       69.4 | Papiamento
+ AUS     |       72.7 | English
+ AXA     |         95 | English
+ AZ      |       92.5 | Azerbaijani
+ B       |         55 | Dutch
+ BD      |       98.5 | Bengali
+ BDS     |         95 | Bajan
+ BEN     |         38 | Fon
+ BERM    |         90 | English
+ BF      |         52 | Mossi
+ BG      |         85 | Bulgarian
+ BHT     |         30 | Nepali
+ BI      |         98 | Kirundi</pre>
+
+
+
+<p>
+Next we jumped into 'river' for the query: what are the 15 longest rivers in China?
+</p>
+<pre class="PROGRAMLISTING">
+
+mondial=# \d river
+                           Table "public.river"
+      Column      |         Type          | Collation | Nullable | Default 
+------------------+-----------------------+-----------+----------+---------
+ name             | character varying(50) |           | not null | 
+ river            | character varying(50) |           |          | 
+ lake             | character varying(50) |           |          | 
+ sea              | character varying(50) |           |          | 
+ length           | numeric               |           |          | 
+ area             | numeric               |           |          | 
+ source           | geocoord              |           |          | 
+ mountains        | character varying(50) |           |          | 
+ sourceelevation  | numeric               |           |          | 
+ estuary          | geocoord              |           |          | 
+ estuaryelevation | numeric               |           |          | 
+Indexes:
+    "riverkey" PRIMARY KEY, btree (name)
+Check constraints:
+    "estcoord" CHECK ((estuary).latitude >= '-90'::integer::numeric AND (estuary).latitude <= 90::numeric AND (estuary).longitude > '-180'::integer::numeric AND (estuary).longitude <= 180::numeric)
+    "riverarea" CHECK (area >= 0::numeric)
+    "riverlength" CHECK (length >= 0::numeric)
+    "rivflowsinto" CHECK (river IS NULL AND lake IS NULL OR river IS NULL AND sea IS NULL OR lake IS NULL AND sea IS NULL)
+    "sourcecoord" CHECK ((source).latitude >= '-90'::integer::numeric AND (source).latitude <= 90::numeric AND (source).longitude > '-180'::integer::numeric AND (source).longitude <= 180::numeric)
+
+mondial=# SELECT name, river, length FROM river;
+           name            |        river         | length 
+---------------------------+----------------------+--------
+ Thjorsa                   |                      |    230
+ Jökulsa a Fjöllum         |                      |    206
+ Thames                    |                      |    346
+ Severn                    |                      |    354
+ Avon                      | Severn               |    123
+ Test                      |                      |     64
+ Great Ouse                |                      |     64
+ Trent                     |                      |    298
+ Ouse                      |                      |    208
+ Aire                      | Ouse                 |    123
+ Clyde                     |                      |    176
+ Leven                     | Clyde                |     10
+ Ness                      |                      |     12
+ Bann                      |                      |    129
+ Shannon                   |                      |    360
+ Gudenå                    |                      |    158
+ Glomma                    |                      |    621
+ Lågen                     | Glomma               |    204
+ Götaälv                   |                      |     93
+ Motala Ström              |                      |    100
+ Klarälv                   |                      |    460
+ Dalälv                    |                      |    520
+ Västerdalälv              | Dalälv               |    320
+ Österdalälv               | Dalälv               |    241
+ Umeälv                    |                      |    470
+ Paatsjoki                 |                      |    145
+ Torneälv                  |                      |    631
+ Ounasjoki                 | Kemijoki             |    300
+ Kemijoki                  |                      |    550
+ Oulujoki                  |                      |    107
+ Kymijoki                  |                      |    203
+ Kokemäenjoki              |                      |    121
+ Vuoksi                    |                      |    162
+ Memel                     |                      |    937
+</pre>
+
+<p>
+I got caught up in what the category `river` in the river table means. I had to go to the documentation to see. I looked up the name for this, this is called the parent river—the river that a tributary flows into.</p>
+<p> And then we looked at geo_river. This is where we find the geographical information about the river. Interestingly, it is province-level information, not country-level.</p>
+<pre class="PROGRAMLISTING">
+
+mondial=# \d geo_river
+                     Table "public.geo_river"
+  Column  |         Type          | Collation | Nullable | Default 
+----------+-----------------------+-----------+----------+---------
+ river    | character varying(50) |           | not null | 
+ country  | character varying(4)  |           | not null | 
+ province | character varying(50) |           | not null | 
+Indexes:
+    "griverkey" PRIMARY KEY, btree (province, country, river)
+
+mondial=# SELECT river.name, geo_river.river, country, province
+mondial-# FROM river JOIN geo_river
+mondial-# ON river.name = geo_river.river
+mondial-# WHERE country = 'CN';
+     name      |     river     | country |   province   
+---------------+---------------+---------+--------------
+ Irtysh        | Irtysh        | CN      | Xinjiang
+ Amur          | Amur          | CN      | Heilongjiang
+ Argun         | Argun         | CN      | Nei Mongol
+ Songhua       | Songhua       | CN      | Heilongjiang
+ Songhua       | Songhua       | CN      | Jilin
+ Sungacha      | Sungacha      | CN      | Heilongjiang
+ Ussuri        | Ussuri        | CN      | Heilongjiang
+ Kherlen       | Kherlen       | CN      | Nei Mongol
+ Ili           | Ili           | CN      | Xinjiang
+ Künes         | Künes         | CN      | Xinjiang
+ Tekes         | Tekes         | CN      | Xinjiang
+ Tarim-Yarkend | Tarim-Yarkend | CN      | Xinjiang
+ Tarim-Yarkend | Tarim-Yarkend | CN      | Xizang
+ Tumen         | Tumen         | CN      | Jilin
+ Yalu          | Yalu          | CN      | Jilin
+ Yalu          | Yalu          | CN      | Liaoning
+ Liao He       | Liao He       | CN      | Jilin
+ Liao He       | Liao He       | CN      | Liaoning
+ Liao He       | Liao He       | CN      | Nei Mongol
+ Huang He      | Huang He      | CN      | Gansu
+ Huang He      | Huang He      | CN      | Henan
+ Huang He      | Huang He      | CN      | Qinghai
+ Huang He      | Huang He      | CN      | Shaanxi
+ Huang He      | Huang He      | CN      | Shandong
+ Huang He      | Huang He      | CN      | Shanxi
+ Huang He      | Huang He      | CN      | Sichuan
+ Huang He      | Huang He      | CN      | Nei Mongol
+ Huang He      | Huang He      | CN      | Ningxia
+ Wei He        | Wei He        | CN      | Gansu
+ Wei He        | Wei He        | CN      | Shaanxi
+ Huai          | Huai          | CN      | Anhui
+ Huai          | Huai          | CN      | Henan
+ Huai          | Huai          | CN      | Jiangsu
+ Yangtze       | Yangtze       | CN      | Anhui
+
+
+</pre>
+<p>
+So we went about finding the longest river in China. While we were all working on that, I did the following query to show how we join river and geo_river, and hopefully we noticed the repeats of river names as they go across mulitple provinces.</p>
+<pre class="PROGRAMLISTING">
+
+SELECT river.name, geo_river.river, country, province
+FROM river JOIN geo_river
+ON river.name = geo_river.river
+WHERE country = 'CN' ORDER BY river.name;
+     name      |     river     | country |   province   
+---------------+---------------+---------+--------------
+ Amur          | Amur          | CN      | Heilongjiang
+ Argun         | Argun         | CN      | Nei Mongol
+ Arun          | Arun          | CN      | Xizang
+ Bei Jiang     | Bei Jiang     | CN      | Guangdong
+ Brahmaputra   | Brahmaputra   | CN      | Xizang
+ Dong Jiang    | Dong Jiang    | CN      | Guangdong
+ Gan Jiang     | Gan Jiang     | CN      | Jiangxi
+ Ghaghara      | Ghaghara      | CN      | Xizang
+ Han           | Han           | CN      | Shaanxi
+ Han           | Han           | CN      | Hubei
+ Hong He       | Hong He       | CN      | Yunnan
+ Huai          | Huai          | CN      | Henan
+ Huai          | Huai          | CN      | Jiangsu
+ Huai          | Huai          | CN      | Anhui
+ Huang He      | Huang He      | CN      | Shanxi
+ Huang He      | Huang He      | CN      | Shandong
+ Huang He      | Huang He      | CN      | Sichuan
+ Huang He      | Huang He      | CN      | Nei Mongol
+ Huang He      | Huang He      | CN      | Ningxia
+ Huang He      | Huang He      | CN      | Gansu
+ Huang He      | Huang He      | CN      | Henan
+ Huang He      | Huang He      | CN      | Qinghai
+ Huang He      | Huang He      | CN      | Shaanxi
+ Ili           | Ili           | CN      | Xinjiang
+ Indus         | Indus         | CN      | Xizang
+ Irawaddy      | Irawaddy      | CN      | Xizang
+ Irawaddy      | Irawaddy      | CN      | Yunnan
+ Irtysh        | Irtysh        | CN      | Xinjiang
+ Kherlen       | Kherlen       | CN      | Nei Mongol
+ Künes         | Künes         | CN      | Xinjiang
+ Liao He       | Liao He       | CN      | Liaoning
+ Liao He       | Liao He       | CN      | Nei Mongol
+ Liao He       | Liao He       | CN      | Jilin
+ Mekong        | Mekong        | CN      | Qinghai
+
+</pre>
+<p>
+With what we've learned so far, this is the result, if you set up the correct query:
+</p>
+<pre class="PROGRAMLISTING">
+
+mondial=# SELECT river.name, river.length, geo_river.country
+mondial-# FROM river JOIN geo_river
+mondial-# ON river.name = geo_river.river
+mondial-# WHERE country = 'CN'
+mondial-# ORDER BY length DESC NULLS LAST;
+     name      | length | country 
+---------------+--------+---------
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Yangtze       |   6380 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Huang He      |   4845 | CN
+ Mekong        |   4350 | CN
+ Mekong        |   4350 | CN
+ Mekong        |   4350 | CN
+ Irtysh        |   4248 | CN
+ Tarim-Yarkend |   3260 | CN
+ Tarim-Yarkend |   3260 | CN
+ Indus         |   3180 | CN
+ Saluen        |   2980 | CN
+ Saluen        |   2980 | CN
+ Brahmaputra   |   2896 | CN
+ Amur          |   2824 | CN
+ Xi Jiang      |   2197 | CN
+ Xi Jiang      |   2197 | CN
+ Xi Jiang      |   2197 | CN
+</pre>
+
+<p>
+So I introduced <span class="hlite">SELECT DISTINCT</span> which filters out duplicates or more based on all of the columns that we specify. Because the three columns 'name', 'length', and 'country' are identical. SELECT DISTINCT displays only a single row from the 11 rows for the Yangtze. And we get the 10 longest rivers in China!
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT DISTINCT river.name, river.length, geo_river.country
+FROM river JOIN geo_river
+ON river.name = geo_river.river
+WHERE country = 'CN'
+ORDER BY length DESC NULLS LAST
+LIMIT 10;
+     name      | length | country 
+---------------+--------+---------
+ Yangtze       |   6380 | CN
+ Huang He      |   4845 | CN
+ Mekong        |   4350 | CN
+ Irtysh        |   4248 | CN
+ Tarim-Yarkend |   3260 | CN
+ Indus         |   3180 | CN
+ Saluen        |   2980 | CN
+ Brahmaputra   |   2896 | CN
+ Amur          |   2824 | CN
+ Xi Jiang      |   2197 | CN
+(10 rows)
+
+</pre>
+
+<p>
+Finally, I got into some of the things we need to content with within the more challenging queries on the homework. First, we looked at how to deal with continent-level information.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# \d continent
+                    Table "public.continent"
+ Column |         Type          | Collation | Nullable | Default 
+--------+-----------------------+-----------+----------+---------
+ name   | character varying(20) |           | not null | 
+ area   | numeric(10,0)         |           |          | 
+Indexes:
+    "continentkey" PRIMARY KEY, btree (name)
+
+mondial=# SELECT * from continent;
+       name        |   area   
+-------------------+----------
+ Europe            | 10523000
+ Asia              | 44614500
+ Australia/Oceania |  9000000
+ Africa            | 30221500
+ North America     | 24709000
+ South America     | 17840000
+(6 rows)
+
+mondial=# \d encompasses
+                     Table "public.encompasses"
+   Column   |         Type          | Collation | Nullable | Default 
+------------+-----------------------+-----------+----------+---------
+ country    | character varying(4)  |           | not null | 
+ continent  | character varying(20) |           | not null | 
+ percentage | numeric               |           |          | 
+</pre>
+<p>
+The `continent` table is relatively useless. (But I guess we could use it to find out what percentage of the area of the continent some country takes up?) The more helpful one is the `encompasses` table. We did a query to see which countries are not 100% in a single continent.
+</p>
+<pre class="PROGRAMLISTING">
+SELECT encompasses.continent, encompasses.percentage, country.name
+FROM encompasses JOIN country
+ON encompasses.country = country.code
+ WHERE percentage < 100;
+     continent     | percentage |    name    
+-------------------+------------+------------
+ Asia              |      76.85 | Russia
+ Europe            |      23.15 | Russia
+ Asia              |         97 | Turkey
+ Europe            |          3 | Turkey
+ Asia              |       94.6 | Kazakhstan
+ Europe            |        5.4 | Kazakhstan
+ Australia/Oceania |         22 | Indonesia
+ Asia              |         78 | Indonesia
+ Africa            |       92.7 | Egypt
+ Asia              |        7.3 | Egypt
+(10 rows)
+
+</pre>
+<p>
+Next, I pointed out a tricky thing about the borders table. The countries are spread (arbitrarily) across, two different columns. So how can we aggregate here?
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# \d borders
+                      Table "public.borders"
+  Column  |         Type         | Collation | Nullable | Default 
+----------+----------------------+-----------+----------+---------
+ country1 | character varying(4) |           | not null | 
+ country2 | character varying(4) |           | not null | 
+ length   | numeric              |           |          | 
+Indexes:
+    "borderkey" PRIMARY KEY, btree (country1, country2)
+Check constraints:
+    "borders_length_check" CHECK (length > 0::numeric)
+
+mondial=# SELECT * FROM borders WHERE country1='R' OR country2='R';
+ country1 | country2 | length 
+----------+----------+--------
+ EST      | R        |    324
+ LV       | R        |    332
+ LT       | R        |    261
+ BY       | R        |   1312
+ PL       | R        |    209
+ R        | UA       |   1944
+ R        | SF       |   1309
+ N        | R        |    191
+ GE       | R        |    894
+ AZ       | R        |    338
+ KZ       | R        |   7644
+ MNG      | R        |   3452
+ CN       | R        |   4179
+ KP       | R        |     18
+(14 rows)
+
+</pre>
+<p>
+I solve this by joining the country table to this table, but joining on either column, using OR in the ON statement. That doubly helps us—it gives us the actual name of the country, but it also give us a call on that we can aggregate on because it has a complete list for the individual country.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=#  SELECT country.name, borders.country1, borders.country2
+ FROM borders JOIN country
+ ON country.code = borders.country1 OR country.code = borders.country2
+ WHERE country.name='Russia';
+  name  | country1 | country2 
+--------+----------+----------
+ Russia | EST      | R
+ Russia | LV       | R
+ Russia | LT       | R
+ Russia | BY       | R
+ Russia | PL       | R
+ Russia | R        | UA
+ Russia | R        | SF
+ Russia | N        | R
+ Russia | GE       | R
+ Russia | AZ       | R
+ Russia | KZ       | R
+ Russia | MNG      | R
+ Russia | CN       | R
+ Russia | KP       | R
+(14 rows)
+</pre>
+
+<p>
+BONUS STUFF!!!: Some other concepts that might help with the advanced questions on this weekend's homework:</p>
+
+<P>There is much more discerning version of count(), <span class="hlite">count(distinct <i>colName</i>)</span>which filters out duplicates or more based on all of the columns that we specify. So, for example, if you wanted to count all of the rivers in China, the following query would be an accurate, because it will count all the instances of China, including all of the duplicates and more because the information is province level for each river.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT count(river), country
+FROM geo_river
+WHERE country = 'CN'
+GROUP BY country;
+ count | country 
+-------+---------
+    72 | CN
+(1 row)
+
+</pre>
+<P>That is a count of all of the rows for China including the 11 rows for the Yangtze, etc. But if we use <span class="hlite">count(distinct <i>colName</i>)</span> it will only count unique river names. So we get the correct answer here: 
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT count(distinct river), country
+FROM geo_river
+WHERE country = 'CN'
+GROUP BY country;
+ count | country 
+-------+---------
+    37 | CN
+(1 row)
+
+</pre>
+<P>So all of the repeats because of the provinces are ignored, YAY!!!
+</p>
+<P>Finally for some of the more adventurous, and extremely difficult questions, you will be required to join a single table to another table more than once. I'm going to leave it to your imagination as to why that might have to happen, but there are a couple questions that this would be necessary. To do that you need to ALAIS the table you are JOIN each time so they are distinguished from each.
+</p>
+<P>Here is an example: the borders table has two countries in each row. Say I wanted to compare the independence dates between the two countries. I need to make two distinct new columns: the independence date for country 1, and a separate date for country 2. So I join the politics table to different times. 
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT borders.country1, borders.country2, c1.independence AS c1_ind, c2.independence AS c2_ind
+FROM borders
+JOIN politics AS c1 ON borders.country1 = c1.country
+JOIN politics AS c2 ON borders.country2 = c2.country
+ORDER BY borders.country1;
+ country1 | country2 |   c1_ind   |   c2_ind   
+----------+----------+------------+------------
+ A        | SLO      | 1918-11-12 | 1991-06-25
+ A        | CZ       | 1918-11-12 | 1993-01-01
+ A        | D        | 1918-11-12 | 1871-01-18
+ A        | H        | 1918-11-12 | 1918-11-18
+ A        | I        | 1918-11-12 | 1861-03-17
+ A        | FL       | 1918-11-12 | 1806-07-12
+ A        | CH       | 1918-11-12 | 1291-01-01
+ A        | SK       | 1918-11-12 | 1993-01-01
+ AD       | CY       |            | 1960-08-16
+ AFG      | UZ       | 1919-08-19 | 1991-08-31
+ AFG      | CN       | 1919-08-19 | 
+ AFG      | IR       | 1919-08-19 | 
+ AFG      | PK       | 1919-08-19 | 1947-08-14
+ AFG      | TJ       | 1919-08-19 | 1991-09-09
+ AFG      | TM       | 1919-08-19 | 1991-10-27
+ AL       | KOS      | 1912-11-28 | 2008-02-17
+ AL       | GR       | 1912-11-28 | 1829-01-01
+ AL       | MK       | 1912-11-28 | 1991-09-17
+ AL       | MNE      | 1912-11-28 | 2006-06-03
+ AND      | E        | 1278-09-08 | 1479-01-20
+ AND      | F        | 1278-09-08 | 
+ ANG      | Z        | 1975-11-11 | 1964-10-24
+ ANG      | RCB      | 1975-11-11 | 1960-08-15
+ ANG      | NAM      | 1975-11-11 | 1990-03-21
+ ANG      | CGO      | 1975-11-11 | 1960-06-30
+ ARM      | GE       | 1918-05-28 | 1991-04-09
+ ARM      | TR       | 1918-05-28 | 1923-10-29
+ ARM      | AZ       | 1918-05-28 | 1991-08-30
+ ARM      | IR       | 1918-05-28 | 
+ AZ       | TR       | 1991-08-30 | 1923-10-29
+ AZ       | IR       | 1991-08-30 | 
+ AZ       | GE       | 1991-08-30 | 1991-04-09
+ AZ       | R        | 1991-08-30 | 1991-08-24
+
+</pre>
+
+<P>And (just for fun!!) here is some date math, to give us the bordering countries that have had the longest period of time (in years) between their independence.
+</p>
+<pre class="PROGRAMLISTING">
+mondial=# SELECT borders.country1, borders.country2, c1.independence AS c1_ind, c2.independence AS c2_ind,
+ ABS(c1.independence - c2.independence)/365 AS years
+FROM borders
+JOIN politics AS c1 ON borders.country1 = c1.country
+JOIN politics AS c2 ON borders.country2 = c2.country
+ORDER BY years DESC NULLS LAST;
+ country1 | country2 |   c1_ind   |   c2_ind   | years 
+----------+----------+------------+------------+-------
+ I        | RSM      | 1861-03-17 | 0301-01-01 |  1561
+ MAL      | THA      | 1957-08-31 | 1238-01-01 |   720
+ K        | THA      | 1949-11-09 | 1238-01-01 |   712
+ LAO      | THA      | 1949-07-19 | 1238-01-01 |   712
+ MYA      | THA      | 1948-01-04 | 1238-01-01 |   710
+ A        | CH       | 1918-11-12 | 1291-01-01 |   628
+ CH       | D        | 1291-01-01 | 1871-01-18 |   580
+ CH       | I        | 1291-01-01 | 1861-03-17 |   570
+ CH       | FL       | 1291-01-01 | 1806-07-12 |   515
+ OM       | YE       | 1650-01-01 | 1990-05-22 |   340
+ E        | P        | 1479-01-20 | 1139-07-25 |   339
+ OM       | UAE      | 1650-01-01 | 1971-12-02 |   322
+ D        | NL       | 1871-01-18 | 1581-07-26 |   289
+ OM       | SA       | 1650-01-01 | 1932-09-23 |   282
+ B        | NL       | 1830-10-04 | 1581-07-26 |   249
+ AND      | E        | 1278-09-08 | 1479-01-20 |   200
+ IND      | NEP      | 1947-08-15 | 1768-01-01 |   179
+ BZ       | MEX      | 1981-09-21 | 1810-09-16 |   171
+ GR       | MK       | 1829-01-01 | 1991-09-17 |   162
+ BZ       | GCA      | 1981-09-21 | 1821-09-15 |   160
+ GUY      | YV       | 1966-05-26 | 1811-07-05 |   154
+ BR       | SME      | 1822-09-07 | 1975-11-25 |   153
+ BR       | GUY      | 1822-09-07 | 1966-05-26 |   143
+ I        | SLO      | 1861-03-17 | 1991-06-25 |   130
+ CZ       | D        | 1993-01-01 | 1871-01-18 |   122
+ GB       | IRL      | 1801-01-01 | 1921-12-06 |   121
+ RO       | SRB      | 1877-05-09 | 1992-04-11 |   115
+ MD       | RO       | 1991-08-27 | 1877-05-09 |   114
+ RO       | UA       | 1877-05-09 | 1991-12-01 |   114
+ CI       | LB       | 1960-08-07 | 1847-07-26 |   113
+ LB       | SLE      | 1847-07-26 | 1961-04-27 |   113
+ A        | FL       | 1918-11-12 | 1806-07-12 |   112
+ LB       | RG       | 1847-07-26 | 1958-10-02 |   111
+ AL       | KOS      | 1912-11-28 | 2008-02-17 |    95
+ GR       | TR       | 1829-01-01 | 1923-10-29 |    94
+ CO       | PA       | 1810-07-20 | 1903-11-03 |    93
+ AL       | MNE      | 1912-11-28 | 2006-06-03 |    93
+ CDN      | USA      | 1867-07-01 | 1776-07-04 |    91
+ N        | R        | 1905-10-26 | 1991-08-24 |    85
+ BG       | MK       | 1908-09-22 | 1991-09-17 |    83
+ AL       | GR       | 1912-11-28 | 1829-01-01 |    83
+ BG       | SRB      | 1908-09-22 | 1992-04-11 |    83
+ CR       | PA       | 1821-09-15 | 1903-11-03 |    82
+ NAM      | RSA      | 1990-03-21 | 1910-05-31 |    79
+ BG       | GR       | 1908-09-22 | 1829-01-01 |    79
+ AL       | MK       | 1912-11-28 | 1991-09-17 |    78
+ A        | SK       | 1918-11-12 | 1993-01-01 |    74
+ H        | SK       | 1918-11-18 | 1993-01-01 |    74
+ PL       | SK       | 1918-11-11 | 1993-01-01 |    74
+ A        | CZ       | 1918-11-12 | 1993-01-01 |    74
+ CZ       | PL       | 1993-01-01 | 1918-11-11 |    74
+ H        | SRB      | 1918-11-18 | 1992-04-11 |    73
+ R        | SF       | 1991-08-24 | 1917-12-06 |    73
+
+
+</pre>
+
+
+
+ 
+  
+  </div>
+
+
+</div>
+</div>
+</body>
+</html>
