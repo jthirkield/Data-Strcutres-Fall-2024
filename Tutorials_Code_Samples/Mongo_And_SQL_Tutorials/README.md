@@ -1,4 +1,4 @@
-# MongoDB and postgresSQL Tutorials
+# MongoDB and postgreSQL Tutorials
 
 To view on my site:
 
